@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">PantryFlow Client Request Sequence</title>
+  <desc id="desc">Classic draw.io-style sequence diagram for request validation, transaction, stock update and PRG response.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#404040"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #1a1a1a; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #555; }
+      .actor { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 1.5; }
+      .actor-green { fill: #d5e8d4; stroke: #82b366; stroke-width: 1.5; }
+      .actor-red { fill: #f8cecc; stroke: #b85450; stroke-width: 1.5; }
+      .actor-title { font-size: 17px; font-weight: 700; }
+      .life { stroke: #808080; stroke-width: 1.4; stroke-dasharray: 7 5; }
+      .activation { fill: #f5f5f5; stroke: #666; stroke-width: 1.2; }
+      .msg { fill: none; stroke: #404040; stroke-width: 1.7; marker-end: url(#arrow); }
+      .return { fill: none; stroke: #666; stroke-width: 1.5; stroke-dasharray: 6 4; marker-end: url(#arrow); }
+      .step { font-size: 14px; font-weight: 700; }
+      .small { font-size: 13px; fill: #444; }
+      .note { fill: #fff2cc; stroke: #d6b656; stroke-width: 1.5; }
+      .alt { fill: none; stroke: #808080; stroke-width: 1.5; }
+      .alt-head { fill: #f5f5f5; stroke: #808080; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#fff"/>
+  <text x="800" y="42" text-anchor="middle" class="title">PantryFlow - Client Request / Inventory Update Sequence</text>
+  <text x="800" y="69" text-anchor="middle" class="subtitle">The server remains authoritative when JavaScript validation is bypassed</text>
+
+  <!-- Participants -->
+  <rect x="45" y="100" width="190" height="58" rx="3" class="actor"/>
+  <text x="140" y="135" text-anchor="middle" class="actor-title">Visitor</text>
+
+  <rect x="315" y="100" width="240" height="58" rx="3" class="actor"/>
+  <text x="435" y="124" text-anchor="middle" class="actor-title">Browser</text>
+  <text x="435" y="145" text-anchor="middle" class="small">HTML + JavaScript</text>
+
+  <rect x="635" y="100" width="250" height="58" rx="3" class="actor-red"/>
+  <text x="760" y="124" text-anchor="middle" class="actor-title">Apache + PHP</text>
+  <text x="760" y="145" text-anchor="middle" class="small">request.php</text>
+
+  <rect x="990" y="100" width="190" height="58" rx="3" class="actor-green"/>
+  <text x="1085" y="135" text-anchor="middle" class="actor-title">PDO</text>
+
+  <rect x="1300" y="100" width="250" height="58" rx="3" class="actor-green"/>
+  <text x="1425" y="124" text-anchor="middle" class="actor-title">MySQL / MariaDB</text>
+  <text x="1425" y="145" text-anchor="middle" class="small">pantryflow database</text>
+
+  <line x1="140" y1="158" x2="140" y2="930" class="life"/>
+  <line x1="435" y1="158" x2="435" y2="930" class="life"/>
+  <line x1="760" y1="158" x2="760" y2="930" class="life"/>
+  <line x1="1085" y1="158" x2="1085" y2="930" class="life"/>
+  <line x1="1425" y1="158" x2="1425" y2="930" class="life"/>
+
+  <rect x="428" y="210" width="14" height="120" class="activation"/>
+  <rect x="753" y="350" width="14" height="475" class="activation"/>
+  <rect x="1078" y="450" width="14" height="300" class="activation"/>
+  <rect x="1418" y="492" width="14" height="225" class="activation"/>
+
+  <!-- Main sequence -->
+  <path d="M140 195 H435" class="msg"/>
+  <text x="288" y="184" text-anchor="middle" class="step">1. Enter request details</text>
+
+  <path d="M435 230 C515 230 515 290 435 290" class="msg"/>
+  <text x="525" y="245" class="step">2. Validate in browser</text>
+  <text x="525" y="267" class="small">name, contact, future date, item, quantity</text>
+
+  <path d="M435 350 H760" class="msg"/>
+  <text x="598" y="339" text-anchor="middle" class="step">3. POST /request.php</text>
+
+  <path d="M760 385 C850 385 850 430 760 430" class="msg"/>
+  <text x="860" y="398" class="step">4. Repeat server validation</text>
+  <text x="860" y="420" class="small">Reject malformed or missing input</text>
+
+  <path d="M760 460 H1085" class="msg"/>
+  <text x="922" y="449" text-anchor="middle" class="step">5. beginTransaction()</text>
+
+  <path d="M1085 500 H1425" class="msg"/>
+  <text x="1255" y="489" text-anchor="middle" class="step">6. SELECT food item FOR UPDATE</text>
+
+  <path d="M1425 540 H1085" class="return"/>
+  <text x="1255" y="529" text-anchor="middle" class="step">Item, current quantity, expiry date</text>
+
+  <path d="M1085 575 H760" class="return"/>
+  <text x="922" y="564" text-anchor="middle" class="step">Locked row result</text>
+
+  <path d="M760 615 H1085" class="msg"/>
+  <text x="922" y="604" text-anchor="middle" class="step">7. Prepared INSERT client_requests</text>
+
+  <path d="M1085 650 H1425" class="msg"/>
+  <text x="1255" y="639" text-anchor="middle" class="small">INSERT request record</text>
+
+  <path d="M760 685 H1085" class="msg"/>
+  <text x="922" y="674" text-anchor="middle" class="step">8. Prepared guarded UPDATE food_items</text>
+
+  <path d="M1085 720 H1425" class="msg"/>
+  <text x="1255" y="709" text-anchor="middle" class="small">quantity = quantity - requested quantity</text>
+
+  <path d="M1085 755 H760" class="return"/>
+  <text x="922" y="744" text-anchor="middle" class="step">Affected row count = 1</text>
+
+  <path d="M760 800 H1085" class="msg"/>
+  <text x="922" y="789" text-anchor="middle" class="step">9. commit()</text>
+
+  <path d="M760 840 H435" class="msg"/>
+  <text x="598" y="829" text-anchor="middle" class="step">10. Set flash + HTTP 302 redirect</text>
+
+  <path d="M435 875 H760" class="msg"/>
+  <text x="598" y="864" text-anchor="middle" class="step">11. GET /request.php</text>
+
+  <path d="M760 910 H435" class="return"/>
+  <text x="598" y="899" text-anchor="middle" class="step">HTML + one-time success message</text>
+
+  <path d="M435 940 H140" class="return"/>
+  <text x="288" y="929" text-anchor="middle" class="step">Confirmation displayed; refresh is safe</text>
+
+  <!-- Failure note -->
+  <rect x="555" y="955" width="905" height="34" class="note"/>
+  <text x="1007" y="978" text-anchor="middle" class="small">Failure path: roll back the transaction, store an error flash message, redirect, and leave inventory unchanged.</text>
+</svg>

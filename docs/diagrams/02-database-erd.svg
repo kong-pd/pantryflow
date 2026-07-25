@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">PantryFlow Database ERD</title>
+  <desc id="desc">Classic draw.io-style ERD for food_items and client_requests with attributes, keys, cardinality and business rules.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #1a1a1a; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #555; }
+      .table { fill: #fff; stroke: #6c8ebf; stroke-width: 1.8; }
+      .header { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 1.8; }
+      .table-title { font-size: 21px; font-weight: 700; }
+      .field { font-size: 15px; }
+      .field-name { font-size: 15px; font-weight: 700; }
+      .key { font-size: 13px; font-weight: 700; }
+      .small { font-size: 12px; fill: #444; }
+      .relation { font-size: 16px; font-weight: 700; }
+      .note { fill: #fff2cc; stroke: #d6b656; stroke-width: 1.5; }
+      .note-title { font-size: 17px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .rowline { stroke: #d0d0d0; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <text x="800" y="48" text-anchor="middle" class="title">PantryFlow - Entity Relationship Diagram</text>
+  <text x="800" y="76" text-anchor="middle" class="subtitle">Physical schema implemented in MySQL / MariaDB</text>
+  <text x="800" y="101" text-anchor="middle" class="small">Notation: NN = NOT NULL; AI = AUTO_INCREMENT; CT = CURRENT_TIMESTAMP</text>
+
+  <!-- food_items table -->
+  <rect x="105" y="145" width="550" height="470" class="table"/>
+  <rect x="105" y="145" width="550" height="58" class="header"/>
+  <text x="380" y="181" text-anchor="middle" class="table-title">food_items</text>
+
+  <text x="125" y="235" class="key">PK</text>
+  <text x="175" y="235" class="field-name">id</text>
+  <text x="350" y="235" class="field">INT UNSIGNED [NN, AI]</text>
+  <line x1="120" y1="254" x2="640" y2="254" class="rowline"/>
+
+  <text x="175" y="290" class="field-name">name</text>
+  <text x="350" y="290" class="field">VARCHAR(100) [NN]</text>
+  <line x1="120" y1="309" x2="640" y2="309" class="rowline"/>
+
+  <text x="175" y="345" class="field-name">quantity</text>
+  <text x="350" y="345" class="field">INT UNSIGNED [NN, DEFAULT 0]</text>
+  <line x1="120" y1="364" x2="640" y2="364" class="rowline"/>
+
+  <text x="175" y="400" class="field-name">expiry_date</text>
+  <text x="350" y="400" class="field">DATE [NULL]</text>
+  <line x1="120" y1="419" x2="640" y2="419" class="rowline"/>
+
+  <text x="175" y="455" class="field-name">created_at</text>
+  <text x="350" y="455" class="field">TIMESTAMP [DEFAULT CT]</text>
+  <line x1="120" y1="474" x2="640" y2="474" class="rowline"/>
+
+  <text x="125" y="515" class="small">Indexes</text>
+  <text x="175" y="543" class="body">idx_food_items_name (name)</text>
+  <text x="175" y="568" class="body">idx_food_items_quantity (quantity)</text>
+  <text x="175" y="593" class="body">idx_food_items_expiry_date (expiry_date)</text>
+
+  <!-- client_requests table -->
+  <rect x="945" y="115" width="550" height="555" class="table"/>
+  <rect x="945" y="115" width="550" height="58" class="header"/>
+  <text x="1220" y="151" text-anchor="middle" class="table-title">client_requests</text>
+
+  <text x="965" y="205" class="key">PK</text>
+  <text x="1015" y="205" class="field-name">id</text>
+  <text x="1195" y="205" class="field">INT UNSIGNED [NN, AI]</text>
+  <line x1="960" y1="224" x2="1480" y2="224" class="rowline"/>
+
+  <text x="1015" y="260" class="field-name">client_name</text>
+  <text x="1195" y="260" class="field">VARCHAR(100) [NN]</text>
+  <line x1="960" y1="279" x2="1480" y2="279" class="rowline"/>
+
+  <text x="1015" y="315" class="field-name">contact</text>
+  <text x="1195" y="315" class="field">VARCHAR(30) [NN]</text>
+  <line x1="960" y1="334" x2="1480" y2="334" class="rowline"/>
+
+  <text x="1015" y="370" class="field-name">pickup_date</text>
+  <text x="1195" y="370" class="field">DATE [NN]</text>
+  <line x1="960" y1="389" x2="1480" y2="389" class="rowline"/>
+
+  <text x="965" y="425" class="key">FK</text>
+  <text x="1015" y="425" class="field-name">food_item_id</text>
+  <text x="1195" y="425" class="field">INT UNSIGNED [NN]</text>
+  <line x1="960" y1="444" x2="1480" y2="444" class="rowline"/>
+
+  <text x="1015" y="480" class="field-name">requested_qty</text>
+  <text x="1195" y="480" class="field">INT UNSIGNED [NN, CHECK &gt; 0]</text>
+  <line x1="960" y1="499" x2="1480" y2="499" class="rowline"/>
+
+  <text x="1015" y="535" class="field-name">created_at</text>
+  <text x="1195" y="535" class="field">TIMESTAMP [DEFAULT CT]</text>
+  <line x1="960" y1="554" x2="1480" y2="554" class="rowline"/>
+
+  <text x="965" y="595" class="small">Indexes</text>
+  <text x="1015" y="623" class="body">idx_requests_food_item (food_item_id)</text>
+  <text x="1015" y="648" class="body">idx_requests_pickup_date (pickup_date)</text>
+
+  <!-- Crow's foot relationship -->
+  <path d="M655 404 H945" fill="none" stroke="#404040" stroke-width="2"/>
+  <line x1="682" y1="380" x2="682" y2="428" stroke="#404040" stroke-width="2"/>
+  <line x1="696" y1="380" x2="696" y2="428" stroke="#404040" stroke-width="2"/>
+  <circle cx="907" cy="404" r="9" fill="#fff" stroke="#404040" stroke-width="2"/>
+  <path d="M945 404 L916 380 M945 404 L916 428" fill="none" stroke="#404040" stroke-width="2"/>
+  <text x="690" y="365" text-anchor="middle" class="relation">1</text>
+  <text x="918" y="365" text-anchor="middle" class="relation">0..*</text>
+  <text x="800" y="390" text-anchor="middle" class="relation">is requested in</text>
+  <text x="800" y="450" text-anchor="middle" class="small">client_requests.food_item_id → food_items.id</text>
+
+  <!-- Rules and scope -->
+  <rect x="105" y="710" width="910" height="160" class="note"/>
+  <text x="130" y="747" class="note-title">Relationship and business rules</text>
+  <text x="130" y="778" class="body">• One food item may appear in zero, one or many client requests.</text>
+  <text x="130" y="804" class="body">• Each client request must reference exactly one food item.</text>
+  <text x="130" y="830" class="body">• Foreign key actions: ON UPDATE CASCADE; ON DELETE RESTRICT.</text>
+  <text x="130" y="856" class="body">• A successful request inserts one row and decrements food_items.quantity in one transaction.</text>
+
+  <rect x="1045" y="710" width="450" height="160" fill="#f5f5f5" stroke="#666" stroke-width="1.5"/>
+  <text x="1070" y="747" class="note-title">Why there are only two entities</text>
+  <text x="1070" y="780" class="body">The assessment specifies hardcoded admin credentials.</text>
+  <text x="1070" y="806" class="body">Authentication state is stored in a PHP Session,</text>
+  <text x="1070" y="832" class="body">not in an admins/users database table.</text>
+</svg>
