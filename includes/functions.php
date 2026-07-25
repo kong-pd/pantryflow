@@ -50,6 +50,72 @@ function consume_form(string $key = 'form_old'): array
     return is_array($values) ? $values : [];
 }
 
+function recent_request_ids(): array
+{
+    $storedIds = $_SESSION['recent_request_ids'] ?? [];
+
+    if (!is_array($storedIds)) {
+        $storedIds = [];
+    }
+
+    // Preserve confirmations created by the immediately preceding single-record session format.
+    $legacyConfirmation = $_SESSION['request_confirmation'] ?? null;
+    if (is_array($legacyConfirmation) && isset($legacyConfirmation['request_id'])) {
+        $legacyRequestId = filter_var(
+            $legacyConfirmation['request_id'],
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+
+        if ($legacyRequestId !== false) {
+            array_unshift($storedIds, $legacyRequestId);
+        }
+
+        unset($_SESSION['request_confirmation']);
+    }
+
+    $requestIds = [];
+
+    foreach ($storedIds as $storedId) {
+        $requestId = filter_var(
+            $storedId,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+
+        if ($requestId !== false && !in_array($requestId, $requestIds, true)) {
+            $requestIds[] = $requestId;
+        }
+    }
+
+    return array_slice($requestIds, 0, 10);
+}
+
+function remember_recent_request(int $requestId): void
+{
+    $requestIds = recent_request_ids();
+    $requestIds = array_values(array_filter(
+        $requestIds,
+        static fn (int $storedId): bool => $storedId !== $requestId
+    ));
+    array_unshift($requestIds, $requestId);
+
+    $_SESSION['recent_request_ids'] = array_slice($requestIds, 0, 10);
+}
+
+function forget_recent_request(int $requestId): void
+{
+    $_SESSION['recent_request_ids'] = array_values(array_filter(
+        recent_request_ids(),
+        static fn (int $storedId): bool => $storedId !== $requestId
+    ));
+}
+
+function has_recent_request(int $requestId): bool
+{
+    return in_array($requestId, recent_request_ids(), true);
+}
+
 function parse_ymd_date(string $value): ?DateTimeImmutable
 {
     $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value);

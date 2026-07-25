@@ -17,7 +17,7 @@ The system shall retrieve food items from the database and display each item's n
 
 **Acceptance criteria:**
 
-1. The page obtains item data from MySQL rather than a hardcoded HTML list.
+1. The page obtains active item data from MySQL rather than a hardcoded HTML list.
 2. Each displayed item contains a name and quantity.
 3. A missing expiry date is displayed as `No expiry date` or an equivalent clear label.
 4. The page remains usable on desktop and mobile-width screens.
@@ -48,7 +48,7 @@ The system shall provide a request form containing client name, contact number, 
 **Acceptance criteria:**
 
 1. The item dropdown is populated from the database.
-2. Only items with quantity greater than 0 and no past expiry date are selectable.
+2. Only active items with quantity greater than 0 and no past expiry date are selectable.
 3. The item option displays enough information to make a useful selection, such as item name and available quantity.
 4. Requested quantity has a minimum value of 1.
 
@@ -79,7 +79,7 @@ PHP shall independently validate every submitted value and shall not rely on bro
 
 1. Missing or malformed values are rejected.
 2. Pickup date later than today is enforced on the server.
-3. The selected item must exist.
+3. The selected item must exist and remain active.
 4. The selected item must not be expired and must have available stock.
 5. Requested quantity must be a positive integer not exceeding current stock.
 6. Invalid submissions do not insert a request or change inventory quantity.
@@ -108,7 +108,7 @@ The system shall show a clear result after request submission.
 
 **Acceptance criteria:**
 
-1. A successful request produces a success message.
+1. A successful request opens a dedicated receipt view containing the item, quantity, pickup date, request reference, and current status.
 2. A validation or stock failure produces a safe, understandable error message.
 3. Submission follows POST-Redirect-GET, so refreshing the result page does not submit again.
 4. Database credentials, SQL text, stack traces, and internal exception details are not exposed.
@@ -166,7 +166,7 @@ The administrator shall be able to view all submitted client requests.
 
 **Acceptance criteria:**
 
-1. Each row displays client name, contact number, food item name, requested quantity, and pickup date.
+1. Each row displays client name, contact number, food item name, requested quantity, pickup date, and request status.
 2. Results are loaded from the database using a join between requests and food items.
 3. Empty-state text is shown when no request exists.
 
@@ -179,7 +179,7 @@ The administrator shall be able to view food items with quantity below 5.
 
 **Acceptance criteria:**
 
-1. The query applies the threshold `quantity < 5` exactly.
+1. The query applies the threshold `quantity < 5` exactly to active inventory records.
 2. Each result displays name and current quantity.
 3. Empty-state text is shown when no item is low in stock.
 
@@ -196,7 +196,7 @@ The administrator shall be able to add a new food item.
 2. Name is required and quantity is a non-negative integer.
 3. Server-side validation runs before insertion.
 4. The insertion uses a PDO prepared statement.
-5. A successful insertion appears on the inventory page and produces a flash message.
+5. A successful insertion appears in both the administrator inventory ledger and the public inventory page.
 6. Submission follows POST-Redirect-GET.
 
 ## 6. Security Behaviour
@@ -215,7 +215,70 @@ All SQL statements containing submitted or URL-derived values shall use PDO prep
 
 All untrusted text displayed in HTML shall be escaped with `htmlspecialchars($value, ENT_QUOTES, 'UTF-8')` or an equivalent shared helper.
 
-## 7. Requirement-to-Rubric Summary
+## 7. Recent Pickup Continuity
+
+### FR-016 - Revisit Recent Confirmations
+
+**Priority:** Should
+**Rubric:** Usability enhancement
+
+The system shall let a visitor revisit requests created in the current browser session without creating a public client-request directory.
+
+**Acceptance criteria:**
+
+1. A successful request identifier is retained in the server-side PHP Session.
+2. The visitor can move between public pages and Team access, then return through `My pickups`.
+3. A confirmation can be opened only when its identifier belongs to the current session history.
+4. Recent pickup details are read from the database and do not display the client's name or contact number.
+5. At most ten recent request identifiers are retained.
+6. Missing or deleted requests are removed from the session history safely.
+
+## 8. Administrator Record Lifecycle
+
+### FR-017 - Reject a Pending Request
+
+**Priority:** Should
+**Rubric:** Administrator workflow enhancement
+
+The administrator shall be able to reject a pending pickup request without deleting its audit record.
+
+**Acceptance criteria:**
+
+1. Only an authenticated administrator can invoke the action through POST.
+2. The request status changes from `pending` to `rejected` and `reviewed_at` is recorded.
+3. The requested quantity is restored to the referenced food item in the same database transaction.
+4. The request row remains visible with a rejected status.
+5. Repeating the action does not restore stock a second time.
+
+### FR-018 - Archive and Restore Inventory
+
+**Priority:** Should
+**Rubric:** Administrator workflow enhancement
+
+The administrator shall be able to retire an item from public use without removing its historical record, and restore it later.
+
+**Acceptance criteria:**
+
+1. Archiving sets `is_active` to `0` and records `archived_at`.
+2. An archived item is absent from the public inventory and request dropdown.
+3. The item remains visible in the administrator inventory ledger and in historical request joins.
+4. Restoring sets `is_active` to `1` and clears `archived_at`.
+
+### FR-019 - Delete an Unreferenced Archived Item
+
+**Priority:** Could
+**Rubric:** Administrator workflow enhancement
+
+The administrator may permanently remove a mistaken item only when it is archived and has never been referenced by a request.
+
+**Acceptance criteria:**
+
+1. An active item cannot be permanently deleted.
+2. An item with one or more request references cannot be permanently deleted.
+3. The UI asks for confirmation before permanent deletion.
+4. The foreign key remains a final database-level safeguard.
+
+## 9. Requirement-to-Rubric Summary
 
 | Rubric Item | Requirements |
 |---|---|
@@ -226,3 +289,5 @@ All untrusted text displayed in HTML shall be escaped with `htmlspecialchars($va
 | A5 | FR-011, FR-012, FR-013 |
 | B1 | FR-006 and `05-Database-Schema.md` |
 | B2 | FR-006, FR-013, FR-014 |
+
+FR-016 to FR-019 are enhancements beyond the assessed baseline and do not replace any rubric requirement.

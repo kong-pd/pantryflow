@@ -64,19 +64,19 @@
   <text x="670" y="315" text-anchor="middle" class="node">Public PHP Pages</text>
   <text x="670" y="344" text-anchor="middle" class="body">index.php</text>
   <text x="670" y="368" text-anchor="middle" class="body">request.php</text>
-  <text x="670" y="392" text-anchor="middle" class="body">login.php</text>
+  <text x="670" y="392" text-anchor="middle" class="body">history.php · login.php</text>
 
   <rect x="825" y="285" width="250" height="125" rx="4" class="box-red"/>
   <text x="950" y="315" text-anchor="middle" class="node">Protected PHP Pages</text>
-  <text x="950" y="344" text-anchor="middle" class="body">dashboard.php</text>
-  <text x="950" y="368" text-anchor="middle" class="body">add-item.php</text>
-  <text x="950" y="392" text-anchor="middle" class="body">logout.php</text>
+  <text x="950" y="344" text-anchor="middle" class="body">dashboard.php · add-item.php</text>
+  <text x="950" y="368" text-anchor="middle" class="body">reject-request.php</text>
+  <text x="950" y="392" text-anchor="middle" class="body">inventory-action.php · logout.php</text>
 
   <rect x="545" y="465" width="250" height="130" rx="4" class="note"/>
   <text x="670" y="496" text-anchor="middle" class="node">Business Logic</text>
-  <text x="670" y="525" text-anchor="middle" class="body">Server-side validation</text>
-  <text x="670" y="549" text-anchor="middle" class="body">Stock and expiry checks</text>
-  <text x="670" y="573" text-anchor="middle" class="body">PRG + flash messages</text>
+  <text x="670" y="525" text-anchor="middle" class="body">Validation + item state</text>
+  <text x="670" y="549" text-anchor="middle" class="body">Atomic reserve / restore</text>
+  <text x="670" y="573" text-anchor="middle" class="body">PRG + lifecycle guards</text>
 
   <rect x="825" y="465" width="250" height="130" rx="4" class="box-red"/>
   <text x="950" y="496" text-anchor="middle" class="node">Authentication</text>
@@ -86,7 +86,7 @@
 
   <rect x="655" y="660" width="310" height="75" rx="4" class="box-green"/>
   <text x="810" y="690" text-anchor="middle" class="node">PDO Data Access</text>
-  <text x="810" y="716" text-anchor="middle" class="body">Prepared statements + transaction</text>
+  <text x="810" y="716" text-anchor="middle" class="body">Prepared statements + row-locking transactions</text>
 
   <!-- Data tier -->
   <rect x="1170" y="125" width="375" height="650" class="group"/>
@@ -99,9 +99,9 @@
   <line x1="1245" y1="350" x2="1470" y2="350" stroke="#82b366"/>
   <text x="1358" y="392" text-anchor="middle" class="body">pantryflow database</text>
   <rect x="1260" y="425" width="195" height="52" rx="2" fill="#fff" stroke="#82b366"/>
-  <text x="1358" y="457" text-anchor="middle" class="body">food_items</text>
+  <text x="1358" y="457" text-anchor="middle" class="body">food_items · is_active</text>
   <rect x="1260" y="495" width="195" height="52" rx="2" fill="#fff" stroke="#82b366"/>
-  <text x="1358" y="527" text-anchor="middle" class="body">client_requests</text>
+  <text x="1358" y="527" text-anchor="middle" class="body">client_requests · status</text>
 
   <!-- Connectors -->
   <path d="M250 265 V320" class="edge"/>
@@ -123,5 +123,5 @@
   <text x="1085" y="681" text-anchor="middle" class="edge-label">Prepared SQL / results</text>
 
   <rect x="95" y="825" width="1410" height="45" rx="2" class="note"/>
-  <text x="800" y="853" text-anchor="middle" class="body">Trust boundary: JavaScript improves usability; PHP repeats validation and controls authentication, inventory rules and database updates.</text>
+  <text x="800" y="853" text-anchor="middle" class="body">Trust boundary: PHP authorises every lifecycle POST; MySQL persists statuses, history and atomic inventory changes.</text>
 </svg>

@@ -11,7 +11,7 @@ Build a small client-server web application that enables a community food pantry
 1. Display its food inventory to visitors.
 2. Accept a visitor's request for one food item and a requested quantity.
 3. Validate the request and reduce inventory safely.
-4. Allow an authenticated administrator to view requests, identify low-stock items, and add new food items.
+4. Allow an authenticated administrator to view and reject requests, identify low-stock items, and manage the inventory lifecycle.
 
 The solution must demonstrate clear separation between browser-side presentation and validation, PHP server-side processing, and MySQL data storage.
 
@@ -48,7 +48,10 @@ No front-end framework, PHP framework, build system, or external authentication 
 - SQL injection and XSS prevention.
 - Hardcoded administrator credentials as required by the assessment.
 - Session-based login, protected administrator pages, and logout.
-- Administrator request list, low-stock list, and add-item function.
+- Session-scoped recent pickup confirmations without a public client directory or customer account.
+- Administrator request ledger, rejection action, low-stock list, complete inventory ledger, add-item function, and archive / restore controls.
+- Transactional stock restoration when a pending request is rejected.
+- Permanent deletion only for an archived item that has never been referenced by a request.
 - SQL schema and sample data.
 - Technical report, diagrams, references, rubric, and video link.
 
@@ -57,8 +60,8 @@ No front-end framework, PHP framework, build system, or external authentication 
 - Visitor registration or visitor login.
 - Database-managed administrator accounts or password-reset workflows.
 - Multiple food items in a single request.
-- Editing or deleting inventory items.
-- Approving, rejecting, or changing request status.
+- Editing the name, quantity, or expiry of an existing inventory item.
+- Request approval, fulfilment tracking, or multi-stage workflow beyond `pending` and `rejected`.
 - Email, SMS, payment, delivery, barcode, or notification integrations.
 - Production hosting, cloud deployment, or public API development.
 
@@ -70,14 +73,17 @@ These decisions prevent later rework unless the assessment instructions change.
 |---|---|---|
 | DEC-01 | One request contains one food item selected from a database-populated dropdown. | Matches the rubric's `client_requests.food_item_id` and `requested_qty` structure and keeps the prototype achievable. |
 | DEC-02 | MySQL / MariaDB and PDO are mandatory for the implementation. | This is the most consistent requirement across the project description, rubric, and course scope. |
-| DEC-03 | The public inventory page displays all sample items, including expired and zero-stock items, with explicit status labels. | Makes expiry highlighting and inventory state visible to the assessor. |
+| DEC-03 | The public inventory page displays all active sample items, including expired and zero-stock items, with explicit status labels; archived records remain administrator-only. | Makes expiry highlighting visible without presenting retired records as current stock. |
 | DEC-04 | The request dropdown includes only items with quantity greater than zero and no past expiry date. | Prevents invalid choices without hiding rubric evidence from the public listing. |
 | DEC-05 | A pickup date must be later than the current local date. | Applies the stricter interpretation of "future date only." |
 | DEC-06 | Low stock means `quantity < 5`, including zero stock. | Matches the assessment threshold exactly. |
 | DEC-07 | All data-changing forms use HTTP POST followed by a redirect to a GET page. | Prevents accidental repeat submissions and follows the course's POST-Redirect-GET pattern. |
-| DEC-08 | Request insertion and inventory decrement occur in one database transaction. | Preserves data consistency if either operation fails. |
-| DEC-09 | Administrator credentials are exactly `pantry_admin` and `help2026`. | Matches the assessment specification. |
-| DEC-10 | User-facing database or stack-trace details are never displayed. | Keeps error handling clear and avoids information leakage. |
+| DEC-08 | Recent pickup references are retained only in the current server-side browser session. | Preserves journey continuity without adding customer authentication or exposing client records publicly. |
+| DEC-09 | Request insertion and inventory decrement occur in one database transaction. | Preserves data consistency if either operation fails. |
+| DEC-10 | Administrator credentials are exactly `pantry_admin` and `help2026`. | Matches the assessment specification. |
+| DEC-11 | User-facing database or stack-trace details are never displayed. | Keeps error handling clear and avoids information leakage. |
+| DEC-12 | Rejecting a pending request changes its status and restores its reserved quantity in one transaction. | Prevents lost stock and makes repeated rejection safe. |
+| DEC-13 | Inventory removal defaults to archive / restore. Permanent deletion is available only after archiving and only when no request references the item. | Preserves audit history and honours the foreign key. |
 
 ## 7. Success Criteria
 
@@ -90,6 +96,9 @@ The implementation is considered assessment-ready only when:
 - Every query containing external input uses a PDO prepared statement.
 - Direct navigation to protected pages while logged out is denied.
 - A valid request creates one request record and reduces stock exactly once.
+- Rejecting a pending request preserves the request record and restores stock exactly once.
+- Archived items disappear from public availability but remain in the administrator ledger and historical joins.
+- Referenced food items cannot be permanently deleted.
 - Invalid, expired, zero-stock, or excessive-quantity requests do not change the database.
 - The final submission contains the report PDF, source ZIP, and SQL schema.
 

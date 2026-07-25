@@ -14,6 +14,8 @@
     const availabilityHint = document.getElementById('availability-hint');
     const selectedItemName = document.getElementById('selected-item-name');
     const selectedItemAvailability = document.getElementById('selected-item-availability');
+    const selectedQuantity = document.getElementById('selected-quantity');
+    const selectedPickupDate = document.getElementById('selected-pickup-date');
     const submitButton = document.getElementById('request-submit');
     const formStatus = document.getElementById('form-status');
     const contactPattern = /^\+?[0-9][0-9\s-]{7,19}$/;
@@ -93,14 +95,29 @@
             availabilityHint.textContent = 'Choose an item to see the maximum request quantity.';
             selectedItemName.textContent = 'No item selected';
             selectedItemAvailability.textContent = 'Choose an item in the form to view current availability.';
-            return;
+        } else {
+            const itemName = option.dataset.name || option.textContent.trim();
+            quantityInput.max = String(available);
+            availabilityHint.textContent = `${available} unit${available === 1 ? '' : 's'} currently available.`;
+            selectedItemName.textContent = itemName;
+            selectedItemAvailability.textContent = `${available} unit${available === 1 ? '' : 's'} available`;
         }
 
-        const itemName = option.dataset.name || option.textContent.trim();
-        quantityInput.max = String(available);
-        availabilityHint.textContent = `${available} unit${available === 1 ? '' : 's'} currently available.`;
-        selectedItemName.textContent = itemName;
-        selectedItemAvailability.textContent = `${available} unit${available === 1 ? '' : 's'} available for a future pickup.`;
+        const quantity = Number.parseInt(quantityInput.value, 10);
+        selectedQuantity.textContent = Number.isInteger(quantity) && quantity > 0
+            ? `${quantity} unit${quantity === 1 ? '' : 's'}`
+            : 'Not selected';
+
+        if (pickupInput.value) {
+            const [year, month, day] = pickupInput.value.split('-').map(Number);
+            selectedPickupDate.textContent = new Intl.DateTimeFormat('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            }).format(new Date(year, month - 1, day));
+        } else {
+            selectedPickupDate.textContent = 'Not selected';
+        }
     };
 
     const validateItem = () => {
@@ -146,6 +163,8 @@
     attachValidation(contactInput, validateContact);
     attachValidation(pickupInput, validatePickup, 'change');
     attachValidation(quantityInput, validateQuantity);
+    pickupInput.addEventListener('change', updateSelectionSummary);
+    quantityInput.addEventListener('input', updateSelectionSummary);
 
     itemSelect.addEventListener('change', () => {
         touchedFields.add(itemSelect.id);
@@ -157,15 +176,15 @@
     });
 
     form.addEventListener('submit', (event) => {
-        [nameInput, contactInput, pickupInput, itemSelect, quantityInput]
+        [itemSelect, quantityInput, pickupInput, nameInput, contactInput]
             .forEach((input) => touchedFields.add(input.id));
 
         const checks = [
-            validateName(),
-            validateContact(),
-            validatePickup(),
             validateItem(),
             validateQuantity(),
+            validatePickup(),
+            validateName(),
+            validateContact(),
         ];
 
         if (checks.includes(false)) {
@@ -184,7 +203,7 @@
     window.addEventListener('pageshow', () => {
         form.removeAttribute('aria-busy');
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Confirm request <span aria-hidden="true">&rarr;</span>';
+        submitButton.innerHTML = 'Confirm pickup request <span aria-hidden="true">&rarr;</span>';
     });
 
     updateSelectionSummary();

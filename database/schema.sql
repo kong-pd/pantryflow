@@ -14,10 +14,13 @@ CREATE TABLE food_items (
     name VARCHAR(100) NOT NULL,
     quantity INT UNSIGNED NOT NULL DEFAULT 0,
     expiry_date DATE NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    archived_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_food_items_name (name),
     INDEX idx_food_items_quantity (quantity),
-    INDEX idx_food_items_expiry_date (expiry_date)
+    INDEX idx_food_items_expiry_date (expiry_date),
+    INDEX idx_food_items_active (is_active)
 ) ENGINE=InnoDB;
 
 CREATE TABLE client_requests (
@@ -27,9 +30,12 @@ CREATE TABLE client_requests (
     pickup_date DATE NOT NULL,
     food_item_id INT UNSIGNED NOT NULL,
     requested_qty INT UNSIGNED NOT NULL,
+    status ENUM('pending', 'rejected') NOT NULL DEFAULT 'pending',
+    reviewed_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_requests_food_item (food_item_id),
     INDEX idx_requests_pickup_date (pickup_date),
+    INDEX idx_requests_status (status),
     CONSTRAINT chk_requests_quantity CHECK (requested_qty > 0),
     CONSTRAINT fk_requests_food_item
         FOREIGN KEY (food_item_id)
@@ -45,4 +51,3 @@ INSERT INTO food_items (name, quantity, expiry_date) VALUES
     ('Milk Powder', 6, '2025-12-31'),
     ('Pasta', 0, '2027-11-30'),
     ('Oatmeal', 8, NULL);
-

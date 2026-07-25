@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
   <title id="title">PantryFlow Sitemap</title>
-  <desc id="desc">Classic draw.io-style sitemap separating public routes from session-protected administrator routes.</desc>
+  <desc id="desc">Classic draw.io-style sitemap separating public pages from protected administrator lifecycle routes.</desc>
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-      <path d="M0 0 L10 5 L0 10 Z" fill="#404040"/>
-    </marker>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#404040"/></marker>
     <style>
       text { font-family: Arial, Helvetica, sans-serif; fill: #1a1a1a; }
       .title { font-size: 30px; font-weight: 700; }
@@ -14,87 +12,88 @@
       .public { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 1.5; }
       .admin { fill: #f8cecc; stroke: #b85450; stroke-width: 1.5; }
       .section { fill: #f5f5f5; stroke: #666; stroke-width: 1.5; }
-      .note { fill: #fff2cc; stroke: #d6b656; stroke-width: 1.5; }
-      .node { font-size: 18px; font-weight: 700; }
-      .code { font-family: Consolas, monospace; font-size: 14px; }
-      .body { font-size: 14px; fill: #444; }
-      .edge { fill: none; stroke: #404040; stroke-width: 1.8; marker-end: url(#arrow); }
-      .edge-dashed { fill: none; stroke: #666; stroke-width: 1.5; stroke-dasharray: 6 5; marker-end: url(#arrow); }
-      .label { font-size: 13px; font-weight: 700; }
+      .handler { fill: #fff2cc; stroke: #d6b656; stroke-width: 1.5; }
+      .node { font-size: 17px; font-weight: 700; }
+      .code { font-family: Consolas, monospace; font-size: 13px; }
+      .body { font-size: 13px; fill: #444; }
+      .edge { fill: none; stroke: #404040; stroke-width: 1.7; marker-end: url(#arrow); }
+      .edge-dashed { fill: none; stroke: #666; stroke-width: 1.4; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+      .label { font-size: 12px; font-weight: 700; }
     </style>
   </defs>
 
-  <rect width="1600" height="900" fill="#fff"/>
-  <text x="800" y="48" text-anchor="middle" class="title">PantryFlow - Sitemap and Route Access</text>
-  <text x="800" y="76" text-anchor="middle" class="subtitle">Public navigation, POST handlers and the PHP Session access boundary</text>
+  <rect width="1600" height="1000" fill="#fff"/>
+  <text x="800" y="46" text-anchor="middle" class="title">PantryFlow - Sitemap and Route Access</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">Public journey, protected operations workspace and POST-only lifecycle handlers</text>
 
-  <rect x="55" y="115" width="660" height="700" class="group"/>
-  <text x="80" y="150" class="group-title">Public Area</text>
+  <rect x="45" y="110" width="650" height="820" class="group"/>
+  <text x="70" y="145" class="group-title">Public Area</text>
+  <rect x="755" y="110" width="800" height="820" class="group"/>
+  <text x="780" y="145" class="group-title">Administrator Area (PHP Session required)</text>
 
-  <rect x="760" y="115" width="785" height="700" class="group"/>
-  <text x="785" y="150" class="group-title">Administrator Area (PHP Session required)</text>
+  <rect x="200" y="180" width="340" height="90" rx="4" class="public"/>
+  <text x="370" y="213" text-anchor="middle" class="node">Availability</text>
+  <text x="370" y="240" text-anchor="middle" class="code">index.php · GET</text>
+  <text x="370" y="260" text-anchor="middle" class="body">Active inventory and status</text>
 
-  <!-- Public routes -->
-  <rect x="220" y="190" width="330" height="92" rx="4" class="public"/>
-  <text x="385" y="223" text-anchor="middle" class="node">Inventory Home</text>
-  <text x="385" y="251" text-anchor="middle" class="code">index.php · GET</text>
-  <text x="385" y="270" text-anchor="middle" class="body">Lists every food item and status</text>
+  <rect x="200" y="330" width="340" height="100" rx="4" class="public"/>
+  <text x="370" y="363" text-anchor="middle" class="node">Request a Pickup</text>
+  <text x="370" y="390" text-anchor="middle" class="code">request.php · GET / POST</text>
+  <text x="370" y="412" text-anchor="middle" class="body">Validate, reserve stock, show receipt</text>
 
-  <rect x="220" y="380" width="330" height="110" rx="4" class="public"/>
-  <text x="385" y="414" text-anchor="middle" class="node">Client Request</text>
-  <text x="385" y="442" text-anchor="middle" class="code">request.php · GET / POST</text>
-  <text x="385" y="466" text-anchor="middle" class="body">Validation, transaction and flash result</text>
+  <rect x="200" y="490" width="340" height="90" rx="4" class="public"/>
+  <text x="370" y="523" text-anchor="middle" class="node">My Pickups</text>
+  <text x="370" y="550" text-anchor="middle" class="code">history.php · GET</text>
+  <text x="370" y="570" text-anchor="middle" class="body">Session-owned request references</text>
 
-  <rect x="220" y="600" width="330" height="100" rx="4" class="admin"/>
-  <text x="385" y="635" text-anchor="middle" class="node">Administrator Login</text>
-  <text x="385" y="663" text-anchor="middle" class="code">login.php · GET / POST</text>
-  <text x="385" y="686" text-anchor="middle" class="body">Creates authenticated session</text>
+  <rect x="200" y="680" width="340" height="100" rx="4" class="admin"/>
+  <text x="370" y="713" text-anchor="middle" class="node">Team Access</text>
+  <text x="370" y="740" text-anchor="middle" class="code">login.php · GET / POST</text>
+  <text x="370" y="762" text-anchor="middle" class="body">Creates authenticated admin session</text>
 
-  <path d="M385 282 V380" class="edge"/>
-  <text x="400" y="336" class="label">Request food</text>
+  <path d="M370 270 V330" class="edge"/><text x="385" y="306" class="label">Select item</text>
+  <path d="M370 430 V490" class="edge"/><text x="385" y="466" class="label">Recent receipt</text>
+  <path d="M200 225 H105 V730 H200" class="edge"/><text x="116" y="660" class="label">Footer access</text>
 
-  <path d="M220 235 H120 V650 H220" class="edge"/>
-  <text x="132" y="585" class="label">Admin login</text>
+  <rect x="985" y="175" width="340" height="95" rx="4" class="admin"/>
+  <text x="1155" y="208" text-anchor="middle" class="node">Operations Desk</text>
+  <text x="1155" y="235" text-anchor="middle" class="code">dashboard.php · GET</text>
+  <text x="1155" y="257" text-anchor="middle" class="body">Guard runs before output</text>
 
-  <!-- Admin routes -->
-  <rect x="985" y="185" width="340" height="105" rx="4" class="admin"/>
-  <text x="1155" y="219" text-anchor="middle" class="node">Admin Dashboard</text>
-  <text x="1155" y="247" text-anchor="middle" class="code">dashboard.php · GET</text>
-  <text x="1155" y="271" text-anchor="middle" class="body">Guard runs before HTML output</text>
+  <rect x="790" y="350" width="175" height="90" rx="4" class="section"/>
+  <text x="877" y="383" text-anchor="middle" class="node">Request Ledger</text><text x="877" y="414" text-anchor="middle" class="body">Status + action</text>
+  <rect x="980" y="350" width="175" height="90" rx="4" class="section"/>
+  <text x="1067" y="383" text-anchor="middle" class="node">Low Stock</text><text x="1067" y="414" text-anchor="middle" class="body">Active qty &lt; 5</text>
+  <rect x="1170" y="350" width="175" height="90" rx="4" class="section"/>
+  <text x="1257" y="383" text-anchor="middle" class="node">Inventory</text><text x="1257" y="414" text-anchor="middle" class="body">Active + archived</text>
+  <rect x="1360" y="350" width="165" height="90" rx="4" class="handler"/>
+  <text x="1442" y="383" text-anchor="middle" class="node">Add Item</text><text x="1442" y="414" text-anchor="middle" class="code">POST</text>
 
-  <rect x="810" y="390" width="210" height="110" rx="4" class="section"/>
-  <text x="915" y="426" text-anchor="middle" class="node">Requests List</text>
-  <text x="915" y="454" text-anchor="middle" class="body">JOIN request + item</text>
-  <text x="915" y="478" text-anchor="middle" class="body">client, contact, qty, date</text>
+  <rect x="810" y="550" width="280" height="110" rx="4" class="handler"/>
+  <text x="950" y="584" text-anchor="middle" class="node">Reject Request</text>
+  <text x="950" y="611" text-anchor="middle" class="code">reject-request.php · POST</text>
+  <text x="950" y="638" text-anchor="middle" class="body">Status + stock transaction</text>
 
-  <rect x="1050" y="390" width="210" height="110" rx="4" class="section"/>
-  <text x="1155" y="426" text-anchor="middle" class="node">Low Stock</text>
-  <text x="1155" y="454" text-anchor="middle" class="code">quantity &lt; 5</text>
-  <text x="1155" y="478" text-anchor="middle" class="body">Dashboard section</text>
+  <rect x="1190" y="550" width="300" height="110" rx="4" class="handler"/>
+  <text x="1340" y="584" text-anchor="middle" class="node">Inventory Lifecycle</text>
+  <text x="1340" y="611" text-anchor="middle" class="code">inventory-action.php · POST</text>
+  <text x="1340" y="638" text-anchor="middle" class="body">Archive · restore · safe delete</text>
 
-  <rect x="1290" y="390" width="210" height="110" rx="4" class="admin"/>
-  <text x="1395" y="426" text-anchor="middle" class="node">Add Item</text>
-  <text x="1395" y="454" text-anchor="middle" class="code">add-item.php · POST</text>
-  <text x="1395" y="478" text-anchor="middle" class="body">Validate, INSERT, redirect</text>
+  <rect x="985" y="735" width="340" height="90" rx="4" class="admin"/>
+  <text x="1155" y="768" text-anchor="middle" class="node">Log Out</text>
+  <text x="1155" y="795" text-anchor="middle" class="code">logout.php · POST</text>
+  <text x="1155" y="817" text-anchor="middle" class="body">Clears administrator authentication</text>
 
-  <rect x="985" y="610" width="340" height="90" rx="4" class="admin"/>
-  <text x="1155" y="644" text-anchor="middle" class="node">Logout</text>
-  <text x="1155" y="672" text-anchor="middle" class="code">logout.php · POST</text>
-  <text x="1155" y="692" text-anchor="middle" class="body">Clears session and redirects</text>
+  <path d="M540 730 H670 V222 H985" class="edge"/><text x="710" y="207" class="label">Valid login → 302</text>
+  <path d="M1155 270 V310 H877 V350" class="edge"/>
+  <path d="M1155 270 V310 H1067 V350" class="edge"/>
+  <path d="M1155 270 V310 H1257 V350" class="edge"/>
+  <path d="M1155 270 V310 H1442 V350" class="edge"/>
+  <path d="M877 440 V550 H950" class="edge-dashed"/>
+  <path d="M1257 440 V550 H1340" class="edge-dashed"/>
+  <path d="M1325 222 H1515 V780 H1325" class="edge"/>
+  <path d="M985 780 H720 V845 H540 V745" class="edge"/><text x="735" y="837" class="label">Session cleared</text>
 
-  <path d="M550 650 H690 V237 H985" class="edge"/>
-  <text x="715" y="222" class="label">Valid credentials → 302</text>
-
-  <path d="M1155 290 V345 H915 V390" class="edge"/>
-  <path d="M1155 290 V390" class="edge"/>
-  <path d="M1155 290 V345 H1395 V390" class="edge"/>
-
-  <path d="M1325 237 H1515 V655 H1325" class="edge"/>
-  <text x="1430" y="640" class="label">Log out</text>
-
-  <path d="M985 655 H835 V735 H550 V665" class="edge"/>
-  <text x="690" y="725" class="label">Session cleared</text>
-
-  <rect x="780" y="750" width="730" height="42" rx="2" class="note"/>
-  <text x="1145" y="777" text-anchor="middle" class="body">Unauthenticated direct requests to dashboard.php and add-item.php are redirected to login.php.</text>
+  <rect x="785" y="860" width="740" height="42" rx="2" class="handler"/>
+  <text x="1155" y="886" text-anchor="middle" class="body">All administrator handlers require session authentication and POST before changing persistent data.</text>
 </svg>

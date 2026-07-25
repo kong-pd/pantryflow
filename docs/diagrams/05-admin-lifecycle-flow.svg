@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">PantryFlow Administrator Lifecycle Flow</title>
+  <desc id="desc">Classic draw.io-style flowchart for rejecting a request and managing inventory archive, restore and guarded deletion.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#404040"/></marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #1a1a1a; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #555; }
+      .panel { fill: #fff; stroke: #808080; stroke-width: 1.5; stroke-dasharray: 7 5; }
+      .panel-title { font-size: 19px; font-weight: 700; }
+      .process { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 1.5; }
+      .decision { fill: #fff2cc; stroke: #d6b656; stroke-width: 1.5; }
+      .safe { fill: #d5e8d4; stroke: #82b366; stroke-width: 1.5; }
+      .stop { fill: #f8cecc; stroke: #b85450; stroke-width: 1.5; }
+      .node { font-size: 15px; font-weight: 700; }
+      .body { font-size: 13px; fill: #444; }
+      .edge { fill: none; stroke: #404040; stroke-width: 1.7; marker-end: url(#arrow); }
+      .edge-dashed { fill: none; stroke: #666; stroke-width: 1.4; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+      .label { font-size: 12px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fff"/>
+  <text x="800" y="46" text-anchor="middle" class="title">PantryFlow - Administrator Record Lifecycle</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">POST-only handlers preserve history and keep inventory changes atomic</text>
+
+  <rect x="55" y="110" width="710" height="720" class="panel"/>
+  <text x="80" y="145" class="panel-title">A. Reject a Pickup Request</text>
+  <rect x="230" y="180" width="350" height="62" rx="4" class="process"/>
+  <text x="405" y="207" text-anchor="middle" class="node">POST reject-request.php</text><text x="405" y="228" text-anchor="middle" class="body">Administrator confirms Reject</text>
+  <rect x="230" y="285" width="350" height="62" rx="4" class="process"/>
+  <text x="405" y="312" text-anchor="middle" class="node">Authenticate + begin transaction</text><text x="405" y="333" text-anchor="middle" class="body">Lock the request row FOR UPDATE</text>
+  <polygon points="405,390 555,465 405,540 255,465" class="decision"/>
+  <text x="405" y="458" text-anchor="middle" class="node">Status is pending?</text>
+  <text x="405" y="480" text-anchor="middle" class="body">Guarded transition</text>
+  <rect x="170" y="595" width="470" height="72" rx="4" class="safe"/>
+  <text x="405" y="622" text-anchor="middle" class="node">Set rejected + restore requested quantity</text>
+  <text x="405" y="646" text-anchor="middle" class="body">Both updates remain inside the same transaction</text>
+  <rect x="235" y="715" width="340" height="62" rx="4" class="safe"/>
+  <text x="405" y="742" text-anchor="middle" class="node">Commit + return to ledger</text><text x="405" y="763" text-anchor="middle" class="body">Request row remains visible</text>
+  <rect x="590" y="430" width="135" height="70" rx="4" class="stop"/>
+  <text x="657" y="457" text-anchor="middle" class="node">No change</text><text x="657" y="479" text-anchor="middle" class="body">Already closed</text>
+  <path d="M405 242 V285" class="edge"/><path d="M405 347 V390" class="edge"/>
+  <path d="M405 540 V595" class="edge"/><text x="419" y="571" class="label">Yes</text>
+  <path d="M555 465 H590" class="edge"/><text x="566" y="452" class="label">No</text>
+  <path d="M405 667 V715" class="edge"/>
+
+  <rect x="835" y="110" width="710" height="720" class="panel"/>
+  <text x="860" y="145" class="panel-title">B. Manage a Food Item</text>
+  <rect x="1010" y="180" width="360" height="62" rx="4" class="process"/>
+  <text x="1190" y="207" text-anchor="middle" class="node">POST inventory-action.php</text><text x="1190" y="228" text-anchor="middle" class="body">Archive · restore · delete</text>
+  <rect x="1010" y="280" width="360" height="62" rx="4" class="process"/>
+  <text x="1190" y="307" text-anchor="middle" class="node">Authenticate + lock item</text><text x="1190" y="328" text-anchor="middle" class="body">Validate item ID and requested action</text>
+  <polygon points="1190,385 1335,455 1190,525 1045,455" class="decision"/>
+  <text x="1190" y="449" text-anchor="middle" class="node">Which action?</text>
+
+  <rect x="865" y="575" width="190" height="78" rx="4" class="safe"/>
+  <text x="960" y="603" text-anchor="middle" class="node">Archive</text><text x="960" y="625" text-anchor="middle" class="body">is_active = 0</text><text x="960" y="644" text-anchor="middle" class="body">Keep references</text>
+  <rect x="1095" y="575" width="190" height="78" rx="4" class="safe"/>
+  <text x="1190" y="603" text-anchor="middle" class="node">Restore</text><text x="1190" y="625" text-anchor="middle" class="body">is_active = 1</text><text x="1190" y="644" text-anchor="middle" class="body">Clear archived_at</text>
+  <polygon points="1410,555 1515,614 1410,673 1305,614" class="decision"/>
+  <text x="1410" y="606" text-anchor="middle" class="node">Archived and</text><text x="1410" y="627" text-anchor="middle" class="node">0 references?</text>
+  <rect x="1305" y="720" width="210" height="60" rx="4" class="safe"/>
+  <text x="1410" y="746" text-anchor="middle" class="node">Permanent delete</text><text x="1410" y="767" text-anchor="middle" class="body">Confirmed mistake only</text>
+  <rect x="1045" y="715" width="210" height="68" rx="4" class="stop"/>
+  <text x="1150" y="742" text-anchor="middle" class="node">Refuse delete</text><text x="1150" y="765" text-anchor="middle" class="body">Retain history</text>
+
+  <path d="M1190 242 V280" class="edge"/><path d="M1190 342 V385" class="edge"/>
+  <path d="M1080 490 L960 575" class="edge"/><text x="1005" y="525" class="label">Archive</text>
+  <path d="M1190 525 V575" class="edge"/><text x="1204" y="553" class="label">Restore</text>
+  <path d="M1300 490 L1410 555" class="edge"/><text x="1362" y="520" class="label">Delete</text>
+  <path d="M1410 673 V720" class="edge"/><text x="1424" y="701" class="label">Yes</text>
+  <path d="M1305 614 H1270 V749 H1255" class="edge"/><text x="1278" y="601" class="label">No</text>
+
+  <text x="800" y="866" text-anchor="middle" class="body">Database safeguards: guarded status transition · row locks · transaction rollback · foreign key ON DELETE RESTRICT</text>
+</svg>

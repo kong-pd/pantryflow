@@ -8,8 +8,13 @@ if (!is_post()) {
     redirect(is_admin() ? 'dashboard.php' : 'login.php');
 }
 
+$recentRequestIds = recent_request_ids();
 $_SESSION = [];
+
+if ($recentRequestIds !== []) {
+    $_SESSION['recent_request_ids'] = $recentRequestIds;
+}
+
 session_regenerate_id(true);
 set_flash('success', 'You have been logged out.');
 redirect('login.php');
-

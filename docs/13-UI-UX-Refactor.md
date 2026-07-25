@@ -1,5 +1,7 @@
 # PantryFlow UI/UX Refactor
 
+> July 2026 follow-up: the visual language and request journey were refined again after a hospitality competitor benchmark. See [14-Hospitality-UX-Benchmark.md](14-Hospitality-UX-Benchmark.md).
+
 Reference: [Vercel Web Interface Guidelines](https://vercel.com/design/guidelines)
 
 This review used the supplied guidelines as an interface quality checklist. The visual style remains PantryFlow's own green community-pantry identity; the reference was used for interaction principles, not copied branding.
@@ -28,16 +30,20 @@ After:
 
 ### Administrator Work
 
-Before: the dashboard gave equal weight to an unhelpful “Admin access” statistic and operational data.
+Before: the dashboard gave equal weight to an unhelpful `Admin access` statistic and operational data.
 
 After:
 
-- Summary cards show request count, requested units and low-stock count.
-- The request queue is the main panel.
+- A compact operations ledger shows request count, requested units and low-stock count without separate card styling.
+- The pickup-date-ordered request queue and complete inventory ledger form the left work surface, while stock watch and inventory entry stay together in a compact right rail.
 - Contacts are usable telephone links.
-- Pickup dates and low quantities have compact redundant labels.
+- Each request receives a consistent `PF-####` reference, while pickup dates and low quantities retain compact text labels.
 - The heading links directly to the add-item task.
 - Invalid add-item submissions preserve the entered values after redirect.
+- Authenticated navigation contains only Availability, Operations and Log out; public journey links remain available in the footer.
+- The dashboard contains an `All food items` ledger so normal, low, expired and out-of-stock records remain visible to administrators.
+- Successful inventory entry redirects directly to that ledger; the visible row replaces a redundant persistent success banner.
+- Authentication status is communicated by the protected workspace itself, so the repeated signed-in username label is omitted.
 
 ## Guideline Audit
 
@@ -54,7 +60,7 @@ After:
 | Responsive layout | Mobile two-column navigation, single-column content and no page-level horizontal overflow. | 390px: client width 375px, scroll width 375px. |
 | Useful scrollbars | The dashboard table scrolls only when its data cannot fit; the main page does not overflow. | Desktop and mobile CSS reviewed. |
 | Motion safety | Only specific properties animate and reduced-motion users receive near-zero transitions. | CSS audit found no `transition: all`. |
-| Visual craft | Layered shadows, crisp borders, nested radii and stronger hover/focus contrast. | Desktop screenshots reviewed. |
+| Visual craft | Warm neutral surfaces, thin rules, restrained type scale and dense alignment without decorative cards. | Desktop layouts reviewed at 1920px and 1366px widths. |
 
 ## Tested Outcomes
 

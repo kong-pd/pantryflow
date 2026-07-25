@@ -66,7 +66,7 @@ if (is_post()) {
         $connection->beginTransaction();
 
         $itemStatement = $connection->prepare(
-            'SELECT id, name, quantity, expiry_date
+            'SELECT id, name, quantity, expiry_date, is_active
              FROM food_items
              WHERE id = :id
              FOR UPDATE'
@@ -76,6 +76,10 @@ if (is_post()) {
 
         if ($item === false) {
             throw new DomainException('The selected food item no longer exists.');
+        }
+
+        if ((int) $item['is_active'] !== 1) {
+            throw new DomainException('The selected food item is no longer available for requests.');
         }
 
         $expiryDate = $item['expiry_date'] !== null
@@ -92,9 +96,9 @@ if (is_post()) {
 
         $insertStatement = $connection->prepare(
             'INSERT INTO client_requests
-                (client_name, contact, pickup_date, food_item_id, requested_qty)
+                (client_name, contact, pickup_date, food_item_id, requested_qty, status)
              VALUES
-                (:client_name, :contact, :pickup_date, :food_item_id, :requested_qty)'
+                (:client_name, :contact, :pickup_date, :food_item_id, :requested_qty, :status)'
         );
         $insertStatement->execute([
             'client_name' => $clientName,
@@ -102,7 +106,10 @@ if (is_post()) {
             'pickup_date' => $pickupDate->format('Y-m-d'),
             'food_item_id' => $foodItemId,
             'requested_qty' => $requestedQty,
+            'status' => 'pending',
         ]);
+
+        $requestId = (int) $connection->lastInsertId();
 
         $updateStatement = $connection->prepare(
             'UPDATE food_items
@@ -121,17 +128,10 @@ if (is_post()) {
         }
 
         $connection->commit();
-        set_flash(
-            'success',
-            sprintf(
-                'Request confirmed for %d unit%s of %s. Pickup date: %s.',
-                $requestedQty,
-                $requestedQty === 1 ? '' : 's',
-                $item['name'],
-                $pickupDate->format('d M Y')
-            )
-        );
-        redirect('request.php');
+
+        remember_recent_request($requestId);
+
+        redirect('request.php?confirmed=' . $requestId);
     } catch (DomainException $exception) {
         if ($connection instanceof PDO && $connection->inTransaction()) {
             $connection->rollBack();
@@ -152,6 +152,116 @@ if (is_post()) {
     }
 }
 
+$confirmation = null;
+$confirmationIdRaw = $_GET['confirmed'] ?? null;
+
+if ($confirmationIdRaw !== null) {
+    $confirmationId = filter_var(
+        $confirmationIdRaw,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    if ($confirmationId === false || !has_recent_request($confirmationId)) {
+        set_flash('error', 'That pickup confirmation is not available in this browser session.');
+        redirect(recent_request_ids() === [] ? 'request.php' : 'history.php');
+    }
+
+    try {
+        $confirmationStatement = db()->prepare(
+            'SELECT cr.id, cr.pickup_date, cr.requested_qty, cr.status, fi.name AS item_name
+             FROM client_requests AS cr
+             INNER JOIN food_items AS fi ON fi.id = cr.food_item_id
+             WHERE cr.id = :id
+             LIMIT 1'
+        );
+        $confirmationStatement->execute(['id' => $confirmationId]);
+        $confirmationRecord = $confirmationStatement->fetch();
+
+        if ($confirmationRecord === false) {
+            forget_recent_request($confirmationId);
+            set_flash('info', 'That pickup is no longer available in recent history.');
+            redirect(recent_request_ids() === [] ? 'request.php' : 'history.php');
+        }
+
+        $confirmationDate = parse_ymd_date((string) $confirmationRecord['pickup_date']);
+
+        if ($confirmationDate === null) {
+            throw new RuntimeException('Stored pickup date could not be parsed.');
+        }
+
+        $confirmation = [
+            'request_id' => (int) $confirmationRecord['id'],
+            'item_name' => (string) $confirmationRecord['item_name'],
+            'quantity' => (int) $confirmationRecord['requested_qty'],
+            'pickup_date' => $confirmationDate,
+            'status' => (string) $confirmationRecord['status'],
+        ];
+    } catch (Throwable $exception) {
+        error_log('Confirmation load failed: ' . $exception->getMessage());
+        set_flash('error', 'The pickup confirmation is temporarily unavailable.');
+        redirect('history.php');
+    }
+}
+
+if ($confirmation !== null) {
+    $isRejected = $confirmation['status'] === 'rejected';
+    $pageTitle = $isRejected ? 'Pickup request declined' : 'Pickup request received';
+    $pageId = 'request';
+    require APP_ROOT . '/includes/header.php';
+    ?>
+
+    <section class="confirmation-section" aria-labelledby="confirmation-title">
+        <div class="container confirmation-shell" role="status">
+            <span class="confirmation-mark <?= $isRejected ? 'confirmation-mark-rejected' : '' ?>" aria-hidden="true"><?= $isRejected ? '&times;' : '&#10003;' ?></span>
+            <p class="eyebrow"><?= $isRejected ? 'Request declined' : 'Request received' ?></p>
+            <h1 id="confirmation-title"><?= $isRejected ? 'This pickup will not proceed.' : 'Your request is with the pantry team.' ?></h1>
+            <p class="confirmation-lead">
+                <?php if ($isRejected): ?>
+                    The pantry team could not fulfil <?= e($confirmation['quantity']) ?> unit<?= $confirmation['quantity'] === 1 ? '' : 's' ?> of
+                    <?= e($confirmation['item_name']) ?> for <?= e($confirmation['pickup_date']->format('d M Y')) ?>.
+                <?php else: ?>
+                    <?= e($confirmation['quantity']) ?> unit<?= $confirmation['quantity'] === 1 ? '' : 's' ?> of
+                    <?= e($confirmation['item_name']) ?> <?= $confirmation['quantity'] === 1 ? 'is' : 'are' ?> reserved while the request is reviewed for
+                    <?= e($confirmation['pickup_date']->format('d M Y')) ?>.
+                <?php endif; ?>
+            </p>
+
+            <dl class="confirmation-details" aria-label="Pickup request details">
+                <div>
+                    <dt>Item</dt>
+                    <dd><?= e($confirmation['item_name']) ?></dd>
+                </div>
+                <div>
+                    <dt>Quantity</dt>
+                    <dd><?= e($confirmation['quantity']) ?> unit<?= $confirmation['quantity'] === 1 ? '' : 's' ?></dd>
+                </div>
+                <div>
+                    <dt>Pickup</dt>
+                    <dd><?= e($confirmation['pickup_date']->format('d M Y')) ?></dd>
+                </div>
+                <div>
+                    <dt>Status</dt>
+                    <dd><?= $isRejected ? 'Rejected' : 'Pending' ?></dd>
+                </div>
+            </dl>
+
+            <div class="confirmation-actions">
+                <a class="button button-primary" href="<?= e(url('history.php')) ?>">View recent pickups</a>
+                <a class="text-link" href="<?= e(url('request.php')) ?>">Arrange another pickup <span aria-hidden="true">&rarr;</span></a>
+            </div>
+            <p class="confirmation-note">
+                Reference PF-<?= e(str_pad((string) $confirmation['request_id'], 4, '0', STR_PAD_LEFT)) ?>
+                <span aria-hidden="true">&middot;</span> Saved in this browser session
+            </p>
+        </div>
+    </section>
+
+    <?php
+    require APP_ROOT . '/includes/footer.php';
+    exit;
+}
+
 $oldInput = consume_form();
 $items = [];
 $loadError = null;
@@ -161,6 +271,7 @@ try {
         'SELECT id, name, quantity, expiry_date
          FROM food_items
          WHERE quantity > 0
+           AND is_active = 1
            AND (expiry_date IS NULL OR expiry_date >= CURRENT_DATE)
          ORDER BY name ASC'
     );
@@ -192,21 +303,21 @@ $pageId = 'request';
 require APP_ROOT . '/includes/header.php';
 ?>
 
-<section class="page-heading">
-    <div class="container narrow">
+<section class="page-heading request-heading">
+    <div class="container">
         <a class="back-link" href="<?= e(url('index.php#inventory')) ?>"><span aria-hidden="true">&larr;</span> Back to inventory</a>
-        <p class="eyebrow">Pickup request</p>
-        <h1>Tell us what you need.</h1>
-        <p>Complete the form once. PantryFlow checks live stock before confirming your request.</p>
+        <p class="eyebrow">Arrange pantry assistance</p>
+        <h1>Plan your pickup.</h1>
+        <p>Select an available item, choose a future date, then leave contact details for the pantry team.</p>
     </div>
 </section>
 
 <section class="request-progress" aria-label="Request progress">
-    <div class="container narrow">
+    <div class="container">
         <ol>
-            <li class="is-current"><span>1</span> Enter details</li>
-            <li><span>2</span> Stock check</li>
-            <li><span>3</span> Confirmation</li>
+            <li class="is-current"><span>01</span><div><strong>Select</strong><small>Item &amp; availability</small></div></li>
+            <li><span>02</span><div><strong>Arrange</strong><small>Pickup &amp; contact</small></div></li>
+            <li><span>03</span><div><strong>Confirmation</strong><small>Stock reserved</small></div></li>
         </ol>
     </div>
 </section>
@@ -229,39 +340,20 @@ require APP_ROOT . '/includes/header.php';
                 <form id="request-form" action="<?= e(url('request.php')) ?>" method="post" novalidate>
                     <div class="form-card-heading">
                         <div>
-                            <p class="eyebrow">Request details</p>
-                            <h2>One item, one pickup</h2>
+                            <p class="eyebrow">Pickup details</p>
+                            <h2>Your arrangement</h2>
                         </div>
-                        <span class="required-note"><span aria-hidden="true">*</span> All fields required</span>
+                        <span class="required-note"><span aria-hidden="true">*</span> Required</span>
                     </div>
 
-                    <fieldset class="form-section">
-                        <legend><span>1</span> Your details</legend>
-                        <p class="form-section-copy">Use contact details the pantry can reach before pickup.</p>
+                    <section class="form-section" aria-labelledby="provision-section-title">
+                        <h3 id="provision-section-title" class="form-section-title"><span>01</span> Select your provision</h3>
+                        <p class="form-section-copy">Begin with the item, quantity and preferred pickup date.</p>
                         <div class="field-grid">
                         <div class="field field-full">
-                            <label for="client_name">Full name <span aria-hidden="true">*</span></label>
-                            <input id="client_name" name="client_name" type="text" maxlength="100" autocomplete="name" required aria-describedby="client_name_error" value="<?= e($oldInput['client_name'] ?? '') ?>">
-                            <p id="client_name_error" class="field-error" data-error-for="client_name" aria-live="polite"></p>
-                        </div>
-
-                        <div class="field field-full">
-                            <label for="contact">Contact number <span aria-hidden="true">*</span></label>
-                            <input id="contact" name="contact" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="e.g. +60 12-345 6789" required aria-describedby="contact_hint contact_error" value="<?= e($oldInput['contact'] ?? '') ?>">
-                            <p id="contact_hint" class="field-hint">Include the country code if the pantry may call from another area.</p>
-                            <p id="contact_error" class="field-error" data-error-for="contact" aria-live="polite"></p>
-                        </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="form-section">
-                        <legend><span>2</span> Item &amp; pickup</legend>
-                        <p class="form-section-copy">Available quantity updates when you choose an item.</p>
-                        <div class="field-grid">
-                        <div class="field field-full">
-                            <label for="food_item_id">Food item <span aria-hidden="true">*</span></label>
+                            <label for="food_item_id">Available item <span aria-hidden="true">*</span></label>
                             <select id="food_item_id" name="food_item_id" required aria-describedby="availability-hint food_item_id_error">
-                                <option value="">Select an available item</option>
+                                <option value="">Choose from today&apos;s pantry</option>
                                 <?php foreach ($items as $item): ?>
                                     <option
                                         value="<?= e($item['id']) ?>"
@@ -269,11 +361,11 @@ require APP_ROOT . '/includes/header.php';
                                         data-name="<?= e($item['name']) ?>"
                                         <?= (string) ($oldInput['food_item_id'] ?? '') === (string) $item['id'] ? 'selected' : '' ?>
                                     >
-                                        <?= e($item['name']) ?> — <?= e($item['quantity']) ?> available
+                                        <?= e($item['name']) ?> &mdash; <?= e($item['quantity']) ?> available
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <p id="availability-hint" class="field-hint" aria-live="polite">Choose an item to see the maximum request quantity.</p>
+                            <p id="availability-hint" class="field-hint" aria-live="polite">Select an item to view the maximum request quantity.</p>
                             <p id="food_item_id_error" class="field-error" data-error-for="food_item_id" aria-live="polite"></p>
                         </div>
 
@@ -289,35 +381,76 @@ require APP_ROOT . '/includes/header.php';
                             <p id="pickup_date_error" class="field-error" data-error-for="pickup_date" aria-live="polite"></p>
                         </div>
                         </div>
-                    </fieldset>
+                    </section>
+
+                    <section class="form-section" aria-labelledby="contact-section-title">
+                        <h3 id="contact-section-title" class="form-section-title"><span>02</span> Add contact details</h3>
+                        <p class="form-section-copy">Use the details the pantry team can reach before pickup.</p>
+                        <div class="field-grid">
+                        <div class="field field-full">
+                            <label for="client_name">Full name <span aria-hidden="true">*</span></label>
+                            <input id="client_name" name="client_name" type="text" maxlength="100" autocomplete="name" required aria-describedby="client_name_error" value="<?= e($oldInput['client_name'] ?? '') ?>">
+                            <p id="client_name_error" class="field-error" data-error-for="client_name" aria-live="polite"></p>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="contact">Contact number <span aria-hidden="true">*</span></label>
+                            <input id="contact" name="contact" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="e.g. +60 12-345 6789" required aria-describedby="contact_hint contact_error" value="<?= e($oldInput['contact'] ?? '') ?>">
+                            <p id="contact_hint" class="field-hint">Include the country code if the pantry may call from another area.</p>
+                            <p id="contact_error" class="field-error" data-error-for="contact" aria-live="polite"></p>
+                        </div>
+                        </div>
+                    </section>
 
                     <div class="form-submit-row">
                         <div>
-                            <strong>Ready to send?</strong>
-                            <span>Your request is confirmed only after the server checks stock.</span>
+                            <strong>Review your arrangement</strong>
+                            <span>Confirmation follows after one final live stock check.</span>
                         </div>
-                        <button id="request-submit" class="button button-primary" type="submit">Confirm request <span aria-hidden="true">&rarr;</span></button>
+                        <button id="request-submit" class="button button-primary" type="submit">Confirm pickup request <span aria-hidden="true">&rarr;</span></button>
                     </div>
                     <p id="form-status" class="sr-only" aria-live="polite"></p>
                 </form>
             <?php endif; ?>
         </div>
 
-        <aside class="request-sidebar" aria-label="Request guidance">
-            <div class="request-summary-card" aria-live="polite" aria-atomic="true">
-                <p class="eyebrow">Your selection</p>
-                <h2 id="selected-item-name">No item selected</h2>
-                <p id="selected-item-availability">Choose an item in the form to view current availability.</p>
+        <aside class="request-sidebar" aria-label="Pickup summary and guidance">
+            <div class="request-summary-card" aria-live="polite">
+                <div class="summary-heading">
+                    <div>
+                        <p class="eyebrow">Your itinerary</p>
+                        <h2>Pickup summary</h2>
+                    </div>
+                    <span class="summary-reference">PF / PENDING</span>
+                </div>
+                <dl class="itinerary-list">
+                    <div>
+                        <dt>Item</dt>
+                        <dd id="selected-item-name">Not selected</dd>
+                    </div>
+                    <div>
+                        <dt>Quantity</dt>
+                        <dd id="selected-quantity">1 unit</dd>
+                    </div>
+                    <div>
+                        <dt>Pickup date</dt>
+                        <dd id="selected-pickup-date">Not selected</dd>
+                    </div>
+                    <div>
+                        <dt>Availability</dt>
+                        <dd id="selected-item-availability">Select an item to check.</dd>
+                    </div>
+                </dl>
             </div>
             <div class="information-panel">
-                <h2>What happens next</h2>
+                <p class="eyebrow">Pantry concierge</p>
+                <h2>What follows</h2>
                 <ol class="numbered-list">
-                    <li><span>1</span><div><strong>We check stock</strong><p>The latest quantity is checked again.</p></div></li>
-                    <li><span>2</span><div><strong>Your request is saved</strong><p>Stock and request data update together.</p></div></li>
-                    <li><span>3</span><div><strong>You see confirmation</strong><p>Keep the pickup date for your record.</p></div></li>
+                    <li><span>01</span><div><strong>Live stock check</strong><p>The latest quantity is verified.</p></div></li>
+                    <li><span>02</span><div><strong>Secure reservation</strong><p>Your request and inventory update together.</p></div></li>
+                    <li><span>03</span><div><strong>Clear confirmation</strong><p>Your item and date appear on screen.</p></div></li>
                 </ol>
             </div>
-            <p class="privacy-note"><strong>Privacy note:</strong> Contact details appear only in the protected administrator dashboard.</p>
         </aside>
     </div>
 </section>

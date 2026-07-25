@@ -57,7 +57,7 @@ try {
         'expiry_date' => $expiryDate?->format('Y-m-d'),
     ]);
 
-    set_flash('success', sprintf('%s was added to the pantry inventory.', $name));
+    redirect('dashboard.php#inventory');
 } catch (Throwable $exception) {
     error_log('Add item failed: ' . $exception->getMessage());
     remember_form($oldInput, 'add_item_old');

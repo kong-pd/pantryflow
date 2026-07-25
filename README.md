@@ -9,7 +9,9 @@ Built this for my WAP final assessment. It is basically a small food pantry syst
 - Let a client request one food item for a future pickup date.
 - Check the same request in JavaScript and PHP, because browser validation alone cannot trust one.
 - Save the request and reduce stock in one database transaction.
-- Let the pantry admin see requests, check low-stock items and add new stock.
+- Keep recent pickup confirmations available in the same browser session, without making a public request directory.
+- Let the pantry admin see request status, reject a request with stock restored, review the complete inventory, check low-stock items and add new stock.
+- Archive and restore food records. Permanent delete only appears for an archived item that was never used in a request.
 - Block the admin pages when nobody is logged in.
 
 ## Run on XAMPP
@@ -62,16 +64,20 @@ Yes, the login is hardcoded on purpose. That is what the assessment asked for, s
 |---|---|
 | `index.php` | Public inventory page |
 | `request.php` | Request form and server-side processing |
+| `history.php` | Session-only recent pickup references |
 | `login.php` | Admin login |
 | `dashboard.php` | Requests, low-stock list and add-item form |
 | `add-item.php` | Saves a new food item |
+| `reject-request.php` | Rejects one pending request and restores its stock in a transaction |
+| `inventory-action.php` | Archives, restores or safely deletes an inventory record |
 | `logout.php` | Ends the admin session |
 | `database/schema.sql` | Recreates the database and sample data |
+| `database/migrations/20260726_admin_lifecycle.sql` | Adds lifecycle columns to an existing database without clearing its rows |
 
 The design notes, diagrams, report draft and screenshots are all inside `docs/`. I kept them in the repo because future me will definitely forget why some boring decision was made.
 
 ## Small scope notes
 
-One request has one food item only, so the database has a simple one-to-many relationship from `food_items` to `client_requests`. No cart, no payment, no email and no customer account. This one is a pantry assessment, not Shopee lah.
+One request has one food item only, so the database has a simple one-to-many relationship from `food_items` to `client_requests`. `My pickups` is only a short session history, not a customer account. No cart, no payment and no email. This one is a pantry assessment, not Shopee lah.
 
 For a clean demo, import `database/schema.sql` again. It resets the tables to six sample food items and zero client requests.

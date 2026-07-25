@@ -81,7 +81,7 @@
   <text x="1255" y="489" text-anchor="middle" class="step">6. SELECT food item FOR UPDATE</text>
 
   <path d="M1425 540 H1085" class="return"/>
-  <text x="1255" y="529" text-anchor="middle" class="step">Item, current quantity, expiry date</text>
+  <text x="1255" y="529" text-anchor="middle" class="step">Item, active state, quantity and expiry</text>
 
   <path d="M1085 575 H760" class="return"/>
   <text x="922" y="564" text-anchor="middle" class="step">Locked row result</text>
@@ -90,7 +90,7 @@
   <text x="922" y="604" text-anchor="middle" class="step">7. Prepared INSERT client_requests</text>
 
   <path d="M1085 650 H1425" class="msg"/>
-  <text x="1255" y="639" text-anchor="middle" class="small">INSERT request record</text>
+  <text x="1255" y="639" text-anchor="middle" class="small">INSERT request with pending status</text>
 
   <path d="M760 685 H1085" class="msg"/>
   <text x="922" y="674" text-anchor="middle" class="step">8. Prepared guarded UPDATE food_items</text>
@@ -105,16 +105,16 @@
   <text x="922" y="789" text-anchor="middle" class="step">9. commit()</text>
 
   <path d="M760 840 H435" class="msg"/>
-  <text x="598" y="829" text-anchor="middle" class="step">10. Set flash + HTTP 302 redirect</text>
+  <text x="598" y="829" text-anchor="middle" class="step">10. Remember ID + HTTP 302 redirect</text>
 
   <path d="M435 875 H760" class="msg"/>
-  <text x="598" y="864" text-anchor="middle" class="step">11. GET /request.php</text>
+  <text x="598" y="864" text-anchor="middle" class="step">11. GET /request.php?confirmed={id}</text>
 
   <path d="M760 910 H435" class="return"/>
-  <text x="598" y="899" text-anchor="middle" class="step">HTML + one-time success message</text>
+  <text x="598" y="899" text-anchor="middle" class="step">HTML receipt + current request status</text>
 
   <path d="M435 940 H140" class="return"/>
-  <text x="288" y="929" text-anchor="middle" class="step">Confirmation displayed; refresh is safe</text>
+  <text x="288" y="929" text-anchor="middle" class="step">Request receipt displayed; refresh is safe</text>
 
   <!-- Failure note -->
   <rect x="555" y="955" width="905" height="34" class="note"/>

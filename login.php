@@ -18,7 +18,6 @@ if (is_post()) {
     ) {
         session_regenerate_id(true);
         $_SESSION['admin_username'] = ADMIN_USERNAME;
-        set_flash('success', 'Logged in successfully.');
         redirect('dashboard.php');
     }
 

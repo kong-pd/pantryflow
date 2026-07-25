@@ -74,6 +74,19 @@
 - Given the selected item has expired or no longer exists, when I submit, then the request is rejected.
 - Given client-side validation is bypassed, when invalid data reaches PHP, then server-side validation still rejects it.
 
+### US-012 - Revisit a Recent Pickup
+
+**Story:** As a visitor, I want to revisit a pickup I confirmed in this browser session so that navigating elsewhere does not make the arrangement feel lost.
+
+**Related requirements:** FR-016
+**Rubric:** Usability enhancement
+
+**Acceptance scenarios:**
+
+- Given I have just confirmed a request, when I visit another page and select `My pickups`, then I see its reference, item, quantity, and pickup date.
+- Given a request identifier was not created in my current session, when I try to open its confirmation URL directly, then its details are not disclosed.
+- Given my session has no recent requests, when I open the history page, then I see a calm empty state rather than another client's requests.
+
 ## 3. Administrator Stories
 
 ### US-006 - Log In
@@ -134,9 +147,47 @@
 
 **Acceptance scenarios:**
 
-- Given valid name, quantity, and optional expiry date, when I submit, then the item is stored and appears on the inventory page.
+- Given valid name, quantity, and optional expiry date, when I submit, then the item is stored and I am taken to the complete administrator inventory ledger.
 - Given invalid data, when I submit, then no item is created and I see a useful error.
 - Given I am not authenticated, when I attempt to invoke the add-item function, then access is denied.
+
+### US-013 - Reject a Pickup Request Safely
+
+**Story:** As a pantry administrator, I want to reject an unworkable request so that reserved stock returns to inventory without erasing what happened.
+
+**Related requirements:** FR-017
+**Rubric:** Administrator workflow enhancement
+
+**Acceptance scenarios:**
+
+- Given a request is pending, when I confirm Reject, then its status becomes rejected and its quantity returns to the item.
+- Given a request is already rejected, when the action is attempted again, then stock is not restored again.
+- Given a request is rejected, when I revisit the dashboard, then its record remains visible as closed history.
+
+### US-014 - Archive and Restore Food Items
+
+**Story:** As a pantry administrator, I want to archive old or mistaken inventory records so that the public catalogue stays current without losing history.
+
+**Related requirements:** FR-018
+**Rubric:** Administrator workflow enhancement
+
+**Acceptance scenarios:**
+
+- Given an item is active, when I archive it, then it disappears from public availability and remains in the administrator ledger.
+- Given an item is archived, when I restore it, then it becomes publicly available again subject to stock and expiry rules.
+- Given requests reference an archived item, when the request ledger is loaded, then the item name remains available through the foreign-key join.
+
+### US-015 - Remove an Unused Mistake
+
+**Story:** As a pantry administrator, I want to permanently remove an unused mistaken record while being prevented from damaging request history.
+
+**Related requirements:** FR-019
+**Rubric:** Administrator workflow enhancement
+
+**Acceptance scenarios:**
+
+- Given an archived item has no request references, when I confirm Delete, then the row is permanently removed.
+- Given an item is active or referenced by a request, when permanent deletion is attempted, then the system refuses it.
 
 ## 4. Assessor Evidence Story
 
@@ -159,7 +210,8 @@
 2. US-003: show client-side validation.
 3. US-005: show server rejection of an excessive quantity.
 4. US-004: submit a valid request and show stock reduction.
-5. US-006: demonstrate failed and successful login plus protected access.
-6. US-008 and US-009: show requests and low stock.
-7. US-010: add a new item.
-8. US-007: log out and confirm protection.
+5. US-012: leave the confirmation, return through `My pickups`, and show that direct access to another reference is blocked.
+6. US-006: demonstrate failed and successful login plus protected access.
+7. US-008 and US-009: show requests and low stock.
+8. US-010: add a new item.
+9. US-007: log out and confirm protection.

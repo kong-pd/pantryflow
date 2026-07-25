@@ -30,6 +30,15 @@ These requirements define testable quality expectations for a small localhost as
 - The session identifier shall be regenerated after login.
 - Protected pages shall verify an authenticated administrator session.
 - Logout shall invalidate administrator session state.
+- Session-owned public pickup references are not authentication state and may remain after administrator logout.
+
+### NFR-SEC-005 - Recent Pickup Privacy
+
+**Priority:** Must
+
+- The public interface shall not provide a searchable directory of client requests.
+- A confirmation identifier shall be checked against request identifiers stored in the current server-side session before its details are returned.
+- The recent-pickup view shall omit client name and contact number.
 
 ### NFR-SEC-004 - Safe Error Disclosure
 
@@ -38,6 +47,14 @@ These requirements define testable quality expectations for a small localhost as
 - Users shall receive helpful generic errors.
 - SQL statements, database credentials, stack traces, and raw exception messages shall not be shown in the browser.
 - Technical errors may be logged locally during development.
+
+### NFR-SEC-006 - Protected Lifecycle Actions
+
+**Priority:** Must
+
+- Request rejection and inventory archive, restore, or delete actions shall require an authenticated administrator session.
+- Lifecycle changes shall accept POST only; a direct GET shall not modify data.
+- Irreversible deletion and stock-restoring rejection shall require an explicit confirmation in the administrator interface.
 
 ## 3. Data Integrity and Reliability
 
@@ -55,6 +72,14 @@ These requirements define testable quality expectations for a small localhost as
 - Inventory quantity shall never become negative.
 - Both application validation and the update condition shall protect this invariant.
 
+### NFR-DAT-003 - Historical Record Retention
+
+**Priority:** Must
+
+- Rejecting a request shall retain its row and foreign-key relationship.
+- Archiving a food item shall retain its row and every historical request reference.
+- Permanent deletion shall be refused unless the item is archived and has zero request references.
+
 ### NFR-REL-001 - Atomic Request Processing
 
 **Priority:** Must
@@ -68,6 +93,14 @@ These requirements define testable quality expectations for a small localhost as
 
 - Data-changing POST requests shall redirect after processing.
 - Refreshing the resulting GET page shall not repeat the database change.
+
+### NFR-REL-003 - Atomic and Idempotent Rejection
+
+**Priority:** Must
+
+- A pending-to-rejected status update and its inventory restoration shall commit or roll back together.
+- Row locking and a guarded status transition shall ensure that the same request cannot restore stock more than once.
+- A repeated rejection attempt shall leave both request status and inventory quantity unchanged.
 
 ## 4. Usability and Accessibility
 
@@ -93,6 +126,23 @@ These requirements define testable quality expectations for a small localhost as
 - Expired, low-stock, and error states shall use visible text or icons in addition to colour.
 - Form controls shall have associated labels.
 - Keyboard users shall be able to reach and submit all controls.
+
+### NFR-USA-004 - Journey Continuity
+
+**Priority:** Should
+
+- A successful request shall end in a dedicated confirmation state rather than showing a blank copy of the form again.
+- Recent confirmations shall remain reachable while the current browser session remains active.
+- `Team access` shall remain a secondary public destination because it is intended for authorised pantry staff.
+
+### NFR-USA-005 - Deliberate Administrative Actions
+
+**Priority:** Should
+
+- Request and inventory statuses shall be visible as text in the operations table.
+- Archive, restore, reject, and delete controls shall use direct action labels rather than ambiguous icons.
+- Rejected and archived rows shall remain legible while appearing secondary to active work.
+- Permanent deletion shall be visually and verbally distinguished from reversible archiving.
 
 ## 5. Performance
 
@@ -142,5 +192,7 @@ These requirements define testable quality expectations for a small localhost as
 | Authentication | Open protected URLs before login, after login, and after logout. |
 | Data integrity | Submit valid, excessive, zero, negative, expired, and missing-item requests. |
 | Duplicate POST | Submit successfully, refresh, and confirm quantity changes only once. |
+| Request rejection | Reject once and confirm status changes, the request remains, and stock returns exactly once; repeat and confirm no second restoration. |
+| Inventory lifecycle | Archive and restore an item; verify public visibility, admin retention, and hard-delete restrictions. |
 | Responsive UI | Test approximately 360 px and desktop widths. |
 | Error handling | Trigger validation and database-safe failures without exposing internals. |
