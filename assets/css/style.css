@@ -693,7 +693,14 @@ h3 {
 
 .status-label.status-low { color: #80683e; }
 .status-label.status-pending { color: #80683e; }
-.status-label.status-expired,
+.status-label.status-expired {
+  display: inline-block;
+  padding: 0.22rem 0.48rem 0.18rem;
+  color: #762b2b;
+  background: var(--danger-soft);
+  border: 1px solid rgba(139, 59, 59, 0.3);
+}
+
 .status-label.status-out,
 .status-label.status-archived { color: var(--muted); }
 .status-label.status-rejected { color: var(--wine); }
@@ -755,9 +762,18 @@ h3 {
   line-height: 1.45;
 }
 
-.inventory-row.status-expired,
 .inventory-row.status-out {
   opacity: 0.62;
+}
+
+.inventory-row.status-expired {
+  background: linear-gradient(90deg, rgba(139, 59, 59, 0.07), rgba(139, 59, 59, 0) 30%);
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.inventory-row.status-expired .item-description p,
+.inventory-row.status-expired .item-unavailable {
+  color: var(--danger);
 }
 
 .closing-invitation {
