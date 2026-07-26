@@ -1,8 +1,6 @@
 # PantryFlow Technical Report Source Note
 
-The complete assessment answer sheet is now maintained in:
-
-`docs/PantryFlow-Technical-Report.docx`
+The complete assessment answer sheet is delivered as a separate artifact named `PantryFlow-Technical-Report.docx`; it is intentionally not tracked in this source repository.
 
 That Word document is the canonical report. It is deliberately delivered without a cover page so the official institution cover can be placed first. It already contains the full narrative response, current screenshots, five project diagrams, twelve references and the official marking rubric appendix.
 

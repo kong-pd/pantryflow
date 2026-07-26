@@ -2,7 +2,7 @@
 
 ## Delivered by the project handoff
 
-- [x] Complete Word answer sheet at `docs/PantryFlow-Technical-Report.docx`.
+- [x] Complete Word answer sheet delivered separately as `PantryFlow-Technical-Report.docx`.
 - [x] Architecture, ERD, sitemap, request flow and administrator lifecycle figures embedded.
 - [x] Current desktop, request, operations and mobile evidence embedded.
 - [x] Twelve references, including official technical sources and relevant course decks.

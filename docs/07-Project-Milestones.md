@@ -95,9 +95,9 @@ Acceptance result: **Passed.** The current codebase is the functional release-ca
 
 Completed for handoff:
 
-- Eleven labelled screenshots, including the final public, request, administrator and mobile interfaces.
+- Nine internally consistent final screenshots covering the public journey, protected administrator flow, inventory controls and mobile interface.
 - Assessment criterion-to-evidence matrix.
-- Complete report at `docs/PantryFlow-Technical-Report.docx`, excluding only the official cover page as requested.
+- Complete Word report delivered separately from the repository, excluding only the official cover page as requested.
 - Architecture, ERD, sitemap, request-response and administrator lifecycle diagrams embedded in the report.
 - Twelve references covering official platform guidance and the relevant course lecture decks.
 - A timed demonstration script below five minutes.
@@ -114,7 +114,7 @@ Every criterion now has a named evidence item. The remaining actions require the
 
 ## 4. Final Milestone - M6 GitHub Assessment Release
 
-The user approved publishing the code and documentation directly to GitHub `main`. The repository now contains the application, schema, diagrams, evidence and final Word report. No pull request was created because this is the user's own assessment repository.
+The user approved publishing the code and documentation directly to GitHub `main`. The repository contains the application, schema, diagrams and evidence; the Word report remains a separate submission artifact. No pull request was created because this is the user's own assessment repository.
 
 Completed release steps:
 

@@ -74,7 +74,7 @@ Yes, the login is hardcoded on purpose. That is what the assessment asked for, s
 | `database/schema.sql` | Recreates the database and sample data |
 | `database/migrations/20260726_admin_lifecycle.sql` | Adds lifecycle columns to an existing database without clearing its rows |
 
-The design notes, diagrams, screenshots and complete Word answer sheet are all inside `docs/`. I kept them in the repo because future me will definitely forget why some boring decision was made.
+The design notes, diagrams and final screenshots are inside `docs/`. The complete Word answer sheet is kept as a separate submission artifact, because the repository is mainly for source and supporting evidence.
 
 ## Small scope notes
 
