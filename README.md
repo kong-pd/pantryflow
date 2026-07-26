@@ -57,7 +57,7 @@ Hardcoded on purpose — assessment asked for it, didn't want to build a whole u
 | `database/schema.sql` | Recreates database with sample data |
 | `database/migrations/20260726_admin_lifecycle.sql` | Adds lifecycle columns to existing database without dropping rows |
 
-Design notes, diagrams, screenshots and the Word answer sheet are in `docs/`. Kept them in the repo so future me remembers why certain decisions were made.
+Design document, diagrams and screenshots are in `docs/`. 
 
 ## Scope
 
