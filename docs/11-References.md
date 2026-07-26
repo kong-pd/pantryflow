@@ -1,6 +1,6 @@
 # PantryFlow References
 
-These sources support the implementation choices in the technical report. Accessed 26 July 2026.
+Accessed or reviewed on 26 July 2026. The web references are primary platform or security guidance; the course decks tie the implementation back to the taught WAP stack.
 
 1. PHP Documentation. “Sessions.” https://www.php.net/manual/en/book.session.php
 2. PHP Documentation. “PDO::prepare.” https://www.php.net/manual/en/pdo.prepare.php
@@ -9,15 +9,19 @@ These sources support the implementation choices in the technical report. Access
 5. OWASP Foundation. “SQL Injection Prevention Cheat Sheet.” https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
 6. OWASP Foundation. “Cross Site Scripting Prevention Cheat Sheet.” https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
 7. Vercel. “Web Interface Guidelines.” https://vercel.com/design/guidelines
+8. Marjani, Mohsen. *Accessing MySQL Using PDO*, version 1.01. Web Application Programming course slides.
+9. Marjani, Mohsen. *Cookies and Sessions*, version 1.01. Web Application Programming course slides.
+10. Marjani, Mohsen. *Redirect, Routing, and Authentication*. Web Application Programming course slides.
+11. Marjani, Mohsen. *Form Processing in PHP*, version 1.02. Web Application Programming course slides.
+12. Marjani, Mohsen. *Relational Databases and MySQL*, version 1.01. Web Application Programming course slides.
 
-## In-Text Citation Map
+## In-text map
 
-- [1] PHP session authentication and state.
-- [2] PDO prepared statements.
-- [3] `SELECT ... FOR UPDATE` and the stock transaction.
-- [4] Client-side validation and the need for server validation.
-- [5] Prepared statements as a defence against SQL injection.
-- [6] Output encoding for cross-site scripting prevention.
-- [7] Interface interaction, layout, content, accessibility and responsive design review.
-
-If the lecturer requires course materials to appear in the reference list, add the exact module slide title, lecturer, institution and teaching week. Do not invent those details.
+- [1], [9] support PHP session authentication and short-lived visitor state.
+- [2], [8] support central PDO use and prepared statements.
+- [3], [12] support the locking transaction used for stock movement.
+- [4], [11] support browser feedback plus repeated server validation.
+- [5] supports parameterised SQL as the main SQL injection defence.
+- [6] supports context-aware output encoding for stored user input.
+- [7] supports the interaction, accessibility and responsive-interface review.
+- [10] supports protected routes and redirect-based Post/Redirect/Get behaviour.

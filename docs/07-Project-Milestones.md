@@ -1,8 +1,8 @@
 # PantryFlow - Project Milestones
 
 **Progress baseline:** 26 July 2026  
-**Current position:** Code and technical QA are complete. Submission evidence and report materials are prepared; the student video and final PDF assembly remain.  
-**Repository policy:** The current progress snapshot is approved for GitHub publication under `kong-pd`.
+**Current position:** Code, technical QA, evidence capture, the complete Word report and the source archive are ready. Only student-owned submission details remain: the official cover page, video URL and final PDF merge.
+**Repository policy:** The implementation and assessment materials are published to GitHub `main` under `kong-pd`.
 
 ## 1. Milestone Summary
 
@@ -13,8 +13,8 @@
 | M2 | Public Inventory and Request Workflow | `v0.3-public-mvp` | Complete | Inventory listing, dynamic request form, dual-layer validation and safe stock decrement work end to end. |
 | M3 | Administrator Workflow and Security | `v0.4-admin-mvp` | Complete | Login, session guard, dashboard, low-stock view, add-item action and logout work correctly. |
 | M4 | Integrated MVP and Quality Gate | `v0.5-release-candidate` | Complete | Syntax checks, security checks, transaction tests, responsive review and clean database reset pass. |
-| M5 | Submission Evidence and Packaging | `v0.9-submission-candidate` | In progress | References, screenshots and report drafts are ready; video, final PDF and source ZIP remain. |
-| M6 | GitHub Assessment Release | `v1.0.0-assessment` | Approved snapshot | The current implementation and documentation may be committed and pushed; the final release tag waits for completed submission files. |
+| M5 | Submission Evidence and Packaging | `v0.9-submission-candidate` | Complete for handoff | Complete Word report, current screenshots, references, video script, evidence matrix and source ZIP are ready. |
+| M6 | GitHub Assessment Release | `v1.0.0-assessment` | Published to `main` | Code and documentation are pushed; the optional final tag waits for the student's cover and video URL. |
 
 ## 2. Completed Milestones
 
@@ -86,43 +86,43 @@ Completed checks:
 - Excessive quantity is rejected without an inventory change.
 - Desktop pages and a true 390-pixel responsive viewport were visually reviewed.
 - Administrator dashboard renders correctly with no browser console errors.
-- Smoke-test data was removed; database state returned to six food items and zero client requests.
+- Temporary automated test rows were removed without resetting or overwriting the user's current demonstration data.
 - Local port 8080 and assessor port 80 require no PHP code change.
 
 Acceptance result: **Passed.** The current codebase is the functional release-candidate baseline.
 
-## 3. Current Milestone - M5 Submission Evidence and Packaging
+## 3. M5 - Submission Evidence and Packaging
 
-Completed in this checkpoint:
+Completed for handoff:
 
-- Six labelled screenshots covering public, protected and responsive behaviour.
+- Eleven labelled screenshots, including the final public, request, administrator and mobile interfaces.
 - Assessment criterion-to-evidence matrix.
-- Technical report draft with architecture, technology choices, diagrams and testing evidence.
-- Six referenced technical sources.
+- Complete report at `docs/PantryFlow-Technical-Report.docx`, excluding only the official cover page as requested.
+- Architecture, ERD, sitemap, request-response and administrator lifecycle diagrams embedded in the report.
+- Twelve references covering official platform guidance and the relevant course lecture decks.
 - A timed demonstration script below five minutes.
-- A final PDF, video, source ZIP and portal checklist.
+- A clean source ZIP generated from the committed repository and a final portal checklist.
 
 Student actions still required:
 
 1. Fill the student information and official cover page.
 2. Record the required demonstration video and paste its shareable link.
-3. Merge the report, cover page, video link and official rubric into one PDF.
-4. Reset the database and create the final source archive without `.git`.
-5. Open the final PDF and install the extracted ZIP once before portal upload.
+3. Replace the video placeholder in the Word report, put the official cover page first and export one final PDF.
+4. Open the final PDF and install the extracted ZIP once before portal upload.
 
-M5 is complete only when every assessment criterion has a named evidence item and the clean project can be installed from the README instructions.
+Every criterion now has a named evidence item. The remaining actions require the student's identity details or recorded video and therefore sit outside the code handoff.
 
 ## 4. Final Milestone - M6 GitHub Assessment Release
 
-The user approved publishing the current code and documentation snapshot to GitHub. This push is a progress snapshot, not the final assessment tag.
+The user approved publishing the code and documentation directly to GitHub `main`. The repository now contains the application, schema, diagrams, evidence and final Word report. No pull request was created because this is the user's own assessment repository.
 
-Planned release steps:
+Completed release steps:
 
-1. Review `git status` and confirm the exact file scope.
-2. Commit the implemented application, documentation, diagrams and evidence with a plain descriptive message.
-3. Push branch `main` to `origin` as `kong-pd`.
-4. Confirm the GitHub repository contains the expected files.
-5. Create a final release tag only after the student video and submission package are complete.
+1. Reviewed the exact file scope and preserved user-created database records.
+2. Committed the implementation, documentation, diagrams and evidence with plain descriptive messages.
+3. Pushed branch `main` to `origin` as `kong-pd`.
+4. Prepared the report and source archive for submission.
+5. Left the optional `v1.0.0-assessment` tag until the student inserts the final cover and video URL.
 
 ## 5. Scope Freeze
 

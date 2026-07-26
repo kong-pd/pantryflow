@@ -1,40 +1,46 @@
 # PantryFlow Submission Checklist
 
-## One PDF Document
+## Delivered by the project handoff
 
-- [ ] Put the official TU cover page first.
-- [ ] Fill in student name, student ID and module details.
-- [ ] Insert the content from `09-Technical-Report-Draft.md`.
-- [ ] Keep the architecture diagram, sitemap, ERD and request-response flow readable.
-- [ ] Paste the final shareable demonstration video link.
-- [ ] Include at least five real references.
-- [ ] Attach the official marking rubric at the end.
-- [ ] Export everything as one PDF and open it once to check every page.
+- [x] Complete Word answer sheet at `docs/PantryFlow-Technical-Report.docx`.
+- [x] Architecture, ERD, sitemap, request flow and administrator lifecycle figures embedded.
+- [x] Current desktop, request, operations and mobile evidence embedded.
+- [x] Twelve references, including official technical sources and relevant course decks.
+- [x] Official marking rubric reproduced at the end of the report.
+- [x] Timed video walkthrough script below five minutes.
+- [x] GitHub `main` updated under `kong-pd`.
+- [x] Source ZIP generated from committed files without `.git`.
 
-## Demonstration Video
+## Student edits to the one PDF
 
-- [ ] Use the clean seed database before recording.
+- [ ] Put the official TU cover page first and fill in student name, ID and module details.
+- [ ] Record the video and replace `[PASTE SHAREABLE VIDEO URL HERE]` in the Word report.
+- [ ] Confirm the video opens without an access request.
+- [ ] Export the cover plus report plus rubric as one PDF.
+- [ ] Open the exported PDF and check every page, especially diagram labels, screenshots and the landscape rubric appendix.
+
+## Demonstration video
+
 - [ ] Follow `10-Video-Demo-Script.md` and stay below five minutes.
-- [ ] Demonstrate inventory, expired state, request validation, successful stock change, login guard, dashboard and add item.
-- [ ] Show a short database/code explanation.
-- [ ] Upload with permissions that let the assessor open the video without requesting access.
+- [ ] Demonstrate inventory states, request validation, successful stock movement, visitor pickup history, protected login and the operations workspace.
+- [ ] Show add item and briefly explain reject/archive lifecycle behaviour.
+- [ ] Show a short database/code explanation of the PK/FK, PDO prepared statements and transaction.
+- [ ] Avoid exposing unrelated passwords, notifications or personal data.
 
-## Source ZIP
+## Source archive
 
-- [ ] Import `database/schema.sql` one final time so no demo/test request remains.
-- [ ] Keep PHP, HTML output, CSS, JavaScript, SQL, README and `docs/` in the source folder.
-- [ ] Exclude `.git`, editor settings, logs and temporary files from the ZIP.
-- [ ] Name the ZIP using the lecturer’s required naming format.
-- [ ] Extract the ZIP into a temporary folder and run it once on XAMPP.
+- [x] Includes PHP, CSS, JavaScript, SQL, README, report, diagrams and evidence.
+- [x] Excludes `.git` because it was built with `git archive`.
+- [ ] Rename the ZIP only if the lecturer or portal requires a student-ID naming pattern.
+- [ ] Extract it to a temporary folder and follow the README once before submission.
+- [ ] Keep `database/schema.sql` available as a separate upload if the portal provides an SQL slot.
 
-## Portal Upload
+## Portal upload
 
-- [ ] Upload the one PDF document.
+- [ ] Upload the one final PDF.
 - [ ] Upload the source ZIP.
-- [ ] Upload the SQL file separately if the portal provides a separate SQL slot.
-- [ ] Check file names, sizes and upload status before final submission.
-- [ ] Keep a local copy of the submitted files and the final video URL.
+- [ ] Upload `database/schema.sql` separately if requested.
+- [ ] Check file names, sizes and successful upload status before final submission.
+- [ ] Keep a local copy of the submitted files and final video URL.
 
-## Repository Note
-
-The Markdown documents are useful supporting material and should stay in the GitHub repository and source ZIP. They do not replace the required single PDF. The final PDF should consolidate the report, video link, cover page and marking rubric in the order required by the assessment brief.
+The Markdown notes are supporting project material; they do not replace the single PDF required by the brief.

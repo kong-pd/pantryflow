@@ -1,43 +1,49 @@
 # PantryFlow Assessment Evidence Matrix
 
-This checklist links each rubric item to something concrete in the submitted project. It is mainly for the final audit, so no need to hunt around during the demo.
+This matrix keeps the assessment proof concrete. The main answer sheet is `docs/PantryFlow-Technical-Report.docx`; source paths and screenshots below let the assessor verify each claim quickly.
 
-## Application Criteria
+## Section A - Web Application Functions
 
-| Criterion | Evidence in the project | Demo / screenshot evidence | Status |
+| Criterion | Implementation evidence | Report / visual evidence | Status |
 |---|---|---|---|
-| A1: Display food items | `index.php`, `config/pdo.php`, `database/schema.sql` | `evidence/01-inventory-listing.png` shows six database items and clear stock states. | Ready |
-| A2: Expired item display | Expiry comparison and status output in `index.php`; visual state in `assets/css/style.css` | `evidence/01-inventory-listing.png` shows expired Milk Powder in red with an Expired label. | Ready |
-| A3: Client request form | `request.php`, `assets/js/request-validation.js` | `evidence/02-request-form.png` shows the dynamic form; `evidence/03-request-success.png` shows a saved request and reduced Rice stock. | Ready |
-| A4: Administrator access and dashboard | `login.php`, `includes/auth.php`, `dashboard.php`, `logout.php` | `evidence/04-admin-access-guard.png` proves direct access is blocked; `evidence/05-admin-dashboard.png` shows requests and low stock. | Ready |
-| A5: Add food item | `dashboard.php`, `add-item.php` | `evidence/07-add-item-form.png` shows the protected add-item task; demonstrate the success message in the video. | Ready |
+| A1: Food listing and expired state | `index.php`, `config/pdo.php`, `database/schema.sql`, `assets/css/style.css` | Report sections 5 and 6; Figures 5 and 6; `evidence/08-current-public-experience.png` | Ready |
+| A2: Request form and JavaScript validation | `request.php`, `assets/js/request-validation.js` | Report sections 4 and 6; Figure 7; `evidence/09-current-request-workflow.png` | Ready |
+| A3: PHP processing, secure SQL and stock decrement | `request.php`, `includes/functions.php` | Report sections 4, 6 and 7; Figure 3; transaction and rollback discussion | Ready |
+| A4: Hardcoded login, PHP session and logout | `login.php`, `includes/auth.php`, `logout.php` | Report sections 3, 4 and 6; `evidence/04-admin-access-guard.png` | Ready |
+| A5: Dashboard, low stock and add item | `dashboard.php`, `add-item.php` | Report sections 4 and 6; Figures 4 and 8; `evidence/10-current-operations-workspace.png` | Ready |
 
-## Database and Programming Criteria
+The implemented administrator workspace goes slightly beyond the minimum: a pending request can be rejected with stock restored once, an item can be archived without erasing request history, and only an archived item with no request references may be deleted permanently. These rules are documented in the lifecycle diagram rather than presented as unrelated extra scope.
 
-| Criterion | Evidence in the project | Explanation to give | Status |
+## Section B - Database and Programming
+
+| Criterion | Evidence | Why it matters | Status |
 |---|---|---|---|
-| B1: Database design and PDO | `database/schema.sql`, `config/pdo.php`, `docs/05-Database-Schema.md`, `diagrams/02-database-erd.png` | Two rubric-required tables, PK/FK, indexes, check constraint and prepared PDO access. | Ready |
-| B2: Validation and secure processing | `request.php`, `assets/js/request-validation.js`, `add-item.php`, `includes/functions.php` | Client and server validation, output escaping, prepared statements, transaction and row lock before stock decrement. | Ready |
+| B1: Schema, keys, indexes, sample data and PDO | `database/schema.sql`, `database/migrations/20260726_admin_lifecycle.sql`, `config/pdo.php`, `docs/05-Database-Schema.md` | Two required tables, PK/FK relationship, query-supporting indexes, constraints, seed rows and central PDO setup | Ready |
+| B2: Validation and safe processing | `request.php`, `add-item.php`, `request-action.php`, `item-action.php`, `includes/functions.php` | Browser feedback plus authoritative PHP validation, prepared statements, escaped output, row locks and transactions | Ready |
 
-## Documentation Criteria
+## Section C - Documentation
 
-| Criterion | Evidence in the project | Remaining student action | Status |
+| Criterion | Delivered evidence | Student-owned final action | Status |
 |---|---|---|---|
-| C1: Architecture and technology choices | `docs/09-Technical-Report-Draft.md`, `docs/06-System-Architecture.md`, `diagrams/01-system-architecture.png` | Put student details on the cover page. | Draft ready |
-| C2: Diagrams | Architecture, ERD, sitemap and request-response diagrams in `docs/diagrams/` | Insert the PNG exports into the final report PDF. | Ready |
-| C3: References and video | `docs/11-References.md`, `docs/10-Video-Demo-Script.md` | Record the video and replace the video-link placeholder. | Partly pending |
-| C4: Professional submission | `README.md`, `docs/12-Submission-Checklist.md`, clean SQL installer | Merge cover, report, video link and marking rubric into one PDF; create the final source ZIP. | Partly pending |
+| C1: Architecture and technology choices | Word report sections 2 and 3; `docs/06-System-Architecture.md`; Figure 1 | Add official cover details | Ready |
+| C2: Sitemap and request/response flow | Report Figures 2 and 3; diagrams in `docs/diagrams/` | None | Ready |
+| C3: References and video | Twelve report references; `docs/11-References.md`; timed `docs/10-Video-Demo-Script.md` | Record the video and replace the URL placeholder | References ready; video pending |
+| C4: Professional submission | Complete Word report with official rubric appendix, README, checklist, evidence set and clean source ZIP | Put cover first and export the final combined PDF | Package ready for final merge |
 
-## Evidence Files
+## Current Evidence Set
 
-1. `01-inventory-listing.png` — inventory comes from the database and uses visible states.
-2. `02-request-form.png` — client request fields and current item quantity.
-3. `03-request-success.png` — successful request feedback and inventory decrement.
-4. `04-admin-access-guard.png` — unauthenticated dashboard access redirects to login.
-5. `05-admin-dashboard.png` — authenticated request table, low-stock section and add-item form.
-6. `06-responsive-mobile.png` — inventory at a real 390-pixel viewport without horizontal overflow.
-7. `07-add-item-form.png` — completed administrator form for adding a valid inventory item.
+1. `01-inventory-listing.png` - original database listing and stock states.
+2. `02-request-form.png` - original database-populated request form.
+3. `03-request-success.png` - successful request and stock change.
+4. `04-admin-access-guard.png` - unauthenticated dashboard access is blocked.
+5. `05-admin-dashboard.png` - earlier authenticated dashboard state.
+6. `06-responsive-mobile.png` - original narrow-viewport check.
+7. `07-add-item-form.png` - protected add-item form.
+8. `08-current-public-experience.png` - final public landing and availability presentation.
+9. `09-current-request-workflow.png` - final request workflow and live summary.
+10. `10-current-operations-workspace.png` - final high-density operations workspace.
+11. `11-current-mobile-inventory.png` - final mobile hierarchy and inventory treatment.
 
 ## Honest Completion Note
 
-The code, diagrams, references, screenshots and report content are prepared. The final video, its shareable URL, student details, official cover page and attached marking rubric still need to be supplied before portal submission.
+The application, database, diagrams, screenshots, references, report and source archive are ready. The report intentionally has no cover page because the student will use the official institution cover. The only unresolved placeholder is the student's shareable demonstration-video URL.
